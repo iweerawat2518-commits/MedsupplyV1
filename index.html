@@ -1,0 +1,1711 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<base target="_top">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>BN Smart MedSupply</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700&family=Prompt:wght@500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<style>
+:root{
+  --emerald:#00B894; --emerald-d:#00957A; --emerald-l:#E3F8F3;
+  --blue:#0984E3; --blue-d:#066BB8; --blue-l:#E6F2FC;
+  --orange:#FF9F43; --orange-l:#FFF2E5;
+  --navy:#0B1F3A; --navy-2:#132C4F;
+  --bg:#F4F8FB; --white:#FFFFFF; --surface:#FFFFFF;
+  --text:#14263F; --muted:#5E6E82; --line:#E2E8F0;
+  --danger:#E5484D; --danger-l:#FDECEC; --warn:#F5A524; --warn-l:#FFF6E0;
+  --ok:#00B894; --ok-l:#E3F8F3; --info:#0984E3; --info-l:#E6F2FC; --gray-l:#EEF2F6;
+  --radius:14px; --radius-sm:10px;
+  --shadow:0 1px 2px rgba(11,31,58,.06),0 4px 16px rgba(11,31,58,.06);
+  --shadow-lg:0 12px 40px rgba(11,31,58,.18);
+  --sidebar:252px;
+}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%}
+body{font-family:'Sarabun',system-ui,sans-serif;background:var(--bg);color:var(--text);font-size:15px;line-height:1.55;-webkit-font-smoothing:antialiased}
+h1,h2,h3,h4{font-family:'Prompt','Sarabun',sans-serif;margin:0;font-weight:600;color:var(--navy)}
+a{color:var(--blue)}
+button,input,select,textarea{font:inherit;color:inherit}
+.hidden{display:none!important}
+svg.ic{width:20px;height:20px;flex:none;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+
+/* ---------- Login ---------- */
+#login-view{min-height:100vh;display:grid;grid-template-columns:1.1fr 1fr;background:var(--navy)}
+.login-hero{position:relative;padding:56px;color:#fff;display:flex;flex-direction:column;justify-content:space-between;overflow:hidden;
+  background:radial-gradient(1200px 600px at -10% -10%,rgba(0,184,148,.35),transparent 60%),radial-gradient(900px 500px at 110% 110%,rgba(9,132,227,.4),transparent 60%),var(--navy)}
+.login-hero h1{color:#fff;font-size:40px;line-height:1.2;margin-top:24px}
+.login-hero p{color:rgba(255,255,255,.75);max-width:520px;font-size:17px}
+.brand{display:flex;align-items:center;gap:12px}
+.brand-logo{width:44px;height:44px;border-radius:12px;background:linear-gradient(135deg,var(--emerald),var(--blue));display:grid;place-items:center;color:#fff;box-shadow:0 6px 20px rgba(0,184,148,.35)}
+.brand-name{font-family:'Prompt';font-weight:700;font-size:18px;color:#fff;line-height:1.1}
+.brand-name small{display:block;font-family:'Sarabun';font-weight:400;font-size:12px;color:rgba(255,255,255,.65)}
+.hero-feats{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;max-width:560px}
+.hero-feat{background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.12);backdrop-filter:blur(8px);border-radius:12px;padding:14px;font-size:14px;color:rgba(255,255,255,.85);display:flex;gap:10px;align-items:flex-start}
+.hero-feat svg{color:var(--emerald)}
+.login-panel{background:var(--bg);display:grid;place-items:center;padding:32px 16px}
+.login-card{width:100%;max-width:400px;background:#fff;border-radius:20px;box-shadow:var(--shadow-lg);padding:36px 32px}
+.login-card h2{font-size:24px}
+.login-card .sub{color:var(--muted);margin:4px 0 24px}
+.login-foot{color:var(--muted);font-size:13px;margin-top:20px;text-align:center}
+
+/* ---------- Form ---------- */
+.field{display:flex;flex-direction:column;gap:6px;margin-bottom:14px;min-width:0}
+.field label{font-size:13.5px;font-weight:600;color:var(--navy-2)}
+.field label .req{color:var(--danger)}
+.field .hint{font-size:12.5px;color:var(--muted)}
+.input,select.input,textarea.input{width:100%;border:1px solid var(--line);background:#fff;border-radius:var(--radius-sm);padding:9px 12px;outline:none;transition:border-color .15s,box-shadow .15s;min-height:40px}
+.input:focus{border-color:var(--blue);box-shadow:0 0 0 3px rgba(9,132,227,.15)}
+.input.sm{min-height:34px;padding:5px 8px;font-size:14px}
+.input[readonly]{background:var(--gray-l)}
+.input.invalid{border-color:var(--danger);box-shadow:0 0 0 3px rgba(229,72,77,.12)}
+textarea.input{min-height:72px;resize:vertical}
+.grid{display:grid;gap:0 16px}
+.g2{grid-template-columns:repeat(2,minmax(0,1fr))}.g3{grid-template-columns:repeat(3,minmax(0,1fr))}.g4{grid-template-columns:repeat(4,minmax(0,1fr))}
+.span2{grid-column:span 2}.span3{grid-column:span 3}.spanall{grid-column:1/-1}
+.check{display:flex;align-items:center;gap:8px;font-size:14px;cursor:pointer}
+.check input{width:18px;height:18px;accent-color:var(--emerald)}
+
+/* ---------- Buttons ---------- */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;border:1px solid transparent;border-radius:var(--radius-sm);padding:8px 16px;min-height:40px;font-weight:600;cursor:pointer;transition:background .15s,border-color .15s,opacity .15s;white-space:nowrap;background:#fff;border-color:var(--line);color:var(--navy)}
+.btn:hover{background:var(--gray-l)}
+.btn:disabled{opacity:.55;cursor:not-allowed}
+.btn.primary{background:var(--emerald);border-color:var(--emerald);color:#fff}.btn.primary:hover{background:var(--emerald-d)}
+.btn.blue{background:var(--blue);border-color:var(--blue);color:#fff}.btn.blue:hover{background:var(--blue-d)}
+.btn.orange{background:var(--orange);border-color:var(--orange);color:#fff}
+.btn.danger{background:#fff;border-color:#F3C1C3;color:var(--danger)}.btn.danger:hover{background:var(--danger-l)}
+.btn.ghost{background:transparent;border-color:transparent}.btn.ghost:hover{background:var(--gray-l)}
+.btn.sm{min-height:32px;padding:4px 10px;font-size:13.5px}
+.btn.block{width:100%}
+.btn.icon{padding:0;width:40px}
+.btn .spin{width:16px;height:16px;border:2px solid currentColor;border-right-color:transparent;border-radius:50%;animation:spin .7s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* ---------- Shell ---------- */
+#app-view{display:flex;min-height:100vh}
+.sidebar{width:var(--sidebar);background:var(--navy);color:#C9D4E3;position:fixed;inset:0 auto 0 0;display:flex;flex-direction:column;z-index:40;transition:width .2s,transform .2s}
+.sidebar .brand{padding:18px 18px 14px;border-bottom:1px solid rgba(255,255,255,.07)}
+.nav{padding:10px;overflow-y:auto;flex:1}
+.nav-group{font-size:11.5px;letter-spacing:.06em;color:#7F92AD;padding:14px 12px 6px;text-transform:uppercase}
+.nav a{display:flex;align-items:center;gap:12px;padding:10px 12px;border-radius:10px;color:#C9D4E3;text-decoration:none;font-weight:500;margin-bottom:2px;cursor:pointer;white-space:nowrap;position:relative}
+.nav a:hover{background:rgba(255,255,255,.06);color:#fff}
+.nav a.active{background:linear-gradient(90deg,rgba(0,184,148,.22),rgba(0,184,148,.06));color:#fff}
+.nav a.active::before{content:"";position:absolute;left:0;top:8px;bottom:8px;width:3px;border-radius:3px;background:var(--emerald)}
+.nav a .badge-count{margin-left:auto}
+.side-foot{padding:12px 16px;font-size:12px;color:#7F92AD;border-top:1px solid rgba(255,255,255,.07)}
+body.collapsed .sidebar{width:72px}
+body.collapsed .sidebar .brand-name,body.collapsed .nav a span,body.collapsed .nav-group,body.collapsed .side-foot,body.collapsed .nav a .badge-count{display:none}
+body.collapsed .main{margin-left:72px}
+.main{flex:1;margin-left:var(--sidebar);min-width:0;transition:margin .2s;display:flex;flex-direction:column}
+.topbar{height:64px;background:rgba(255,255,255,.85);backdrop-filter:blur(10px);border-bottom:1px solid var(--line);display:flex;align-items:center;gap:12px;padding:0 20px;position:sticky;top:0;z-index:30}
+.topbar h1{font-size:19px;flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.top-actions{display:flex;align-items:center;gap:6px}
+.bell{position:relative}
+.bell .dot{position:absolute;top:4px;right:2px;min-width:18px;height:18px;border-radius:9px;background:var(--danger);color:#fff;font-size:11px;font-weight:700;display:grid;place-items:center;padding:0 4px}
+.user-chip{display:flex;align-items:center;gap:10px;padding:4px 10px 4px 4px;border-radius:999px;border:1px solid var(--line);background:#fff;cursor:pointer;position:relative}
+.avatar{width:34px;height:34px;border-radius:50%;background:linear-gradient(135deg,var(--emerald),var(--blue));color:#fff;display:grid;place-items:center;font-weight:700;font-family:'Prompt'}
+.user-chip .meta{line-height:1.15}.user-chip .meta b{font-size:14px;display:block}.user-chip .meta small{color:var(--muted);font-size:12px}
+.dropdown{position:absolute;right:0;top:calc(100% + 8px);background:#fff;border:1px solid var(--line);border-radius:12px;box-shadow:var(--shadow-lg);min-width:220px;padding:6px;z-index:60}
+.dropdown a{display:flex;gap:10px;align-items:center;padding:9px 12px;border-radius:8px;color:var(--text);text-decoration:none;cursor:pointer;font-size:14.5px}
+.dropdown a:hover{background:var(--gray-l)}
+.content{padding:24px;max-width:1500px;width:100%;margin:0 auto}
+.backdrop{position:fixed;inset:0;background:rgba(11,31,58,.45);z-index:35}
+
+/* ---------- Cards / Panels ---------- */
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);margin-bottom:20px;min-width:0}
+.panel-h{display:flex;align-items:center;gap:12px;padding:16px 20px;border-bottom:1px solid var(--line);flex-wrap:wrap}
+.panel-h h3{font-size:16px;flex:1;min-width:160px}
+.panel-h .desc{font-size:13px;color:var(--muted);font-weight:400;font-family:'Sarabun';display:block;margin-top:2px}
+.panel-b{padding:18px 20px}
+.panel-b.flush{padding:0}
+.cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:16px;margin-bottom:20px}
+.stat{background:#fff;border:1px solid var(--line);border-radius:var(--radius);padding:16px 18px;box-shadow:var(--shadow);display:flex;gap:14px;align-items:flex-start;cursor:default;min-width:0}
+.stat.link{cursor:pointer}.stat.link:hover{border-color:var(--blue)}
+.stat .ic-wrap{width:42px;height:42px;border-radius:12px;display:grid;place-items:center;flex:none}
+.stat .lbl{font-size:13px;color:var(--muted);line-height:1.3}
+.stat .val{font-family:'Prompt';font-size:26px;font-weight:600;color:var(--navy);line-height:1.2;margin-top:4px;font-variant-numeric:tabular-nums}
+.stat .val small{font-size:13px;font-family:'Sarabun';color:var(--muted);font-weight:500}
+.t-emerald{background:var(--emerald-l);color:var(--emerald-d)}.t-blue{background:var(--blue-l);color:var(--blue)}.t-orange{background:var(--orange-l);color:#D9771F}
+.t-red{background:var(--danger-l);color:var(--danger)}.t-navy{background:#E7ECF3;color:var(--navy)}.t-warn{background:var(--warn-l);color:#B7791F}
+.charts{display:grid;grid-template-columns:2fr 1fr;gap:20px}
+.chart-box{position:relative;height:300px}
+.lists{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:20px}
+
+/* ---------- Toolbar / Tabs ---------- */
+.toolbar{display:flex;gap:10px;flex-wrap:wrap;align-items:flex-end;margin-bottom:16px}
+.toolbar .field{margin:0}
+.toolbar .grow{flex:1;min-width:200px}
+.tabs{display:flex;gap:4px;border-bottom:1px solid var(--line);margin-bottom:16px;overflow-x:auto}
+.tab{padding:10px 16px;border:none;background:none;cursor:pointer;font-weight:600;color:var(--muted);border-bottom:2px solid transparent;white-space:nowrap}
+.tab.active{color:var(--emerald-d);border-bottom-color:var(--emerald)}
+
+/* ---------- Tables ---------- */
+.table-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch}
+table.tbl{width:100%;border-collapse:collapse;font-size:14px}
+.tbl th{background:#F7FAFC;text-align:left;font-weight:600;color:var(--navy-2);padding:10px 12px;border-bottom:1px solid var(--line);white-space:nowrap;position:sticky;top:0}
+.tbl td{padding:10px 12px;border-bottom:1px solid var(--line);vertical-align:top}
+.tbl tr:hover td{background:#FAFCFE}
+.tbl tr.click{cursor:pointer}
+.tbl .num{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
+.tbl tfoot td{font-weight:700;background:#F7FAFC}
+.tbl .muted{color:var(--muted);font-size:13px}
+.tbl input.input{min-width:80px}
+.pager{display:flex;align-items:center;gap:8px;justify-content:flex-end;padding:10px 14px;font-size:13.5px;color:var(--muted)}
+.empty{padding:40px 20px;text-align:center;color:var(--muted)}
+.empty svg{width:44px;height:44px;color:#B4C2D3;margin-bottom:8px}
+.empty h4{color:var(--navy-2);margin-bottom:4px}
+.loading{padding:40px;text-align:center;color:var(--muted)}
+.loading .spin{display:inline-block;width:26px;height:26px;border:3px solid var(--blue);border-right-color:transparent;border-radius:50%;animation:spin .7s linear infinite;margin-bottom:8px}
+
+/* ---------- Badges ---------- */
+.badge{display:inline-flex;align-items:center;gap:4px;padding:2px 10px;border-radius:999px;font-size:12.5px;font-weight:600;white-space:nowrap}
+.b-gray{background:var(--gray-l);color:#4A5A70}.b-blue{background:var(--info-l);color:var(--blue-d)}.b-green{background:var(--ok-l);color:var(--emerald-d)}
+.b-orange{background:var(--orange-l);color:#C76A12}.b-red{background:var(--danger-l);color:#C2292E}.b-warn{background:var(--warn-l);color:#9A6412}.b-navy{background:#E7ECF3;color:var(--navy)}
+.badge-count{background:var(--danger);color:#fff;border-radius:999px;font-size:11px;font-weight:700;padding:0 7px;line-height:18px}
+
+/* ---------- Modal ---------- */
+.modal-layer{position:fixed;inset:0;background:rgba(11,31,58,.5);z-index:100;display:flex;align-items:flex-start;justify-content:center;padding:32px 16px;overflow-y:auto}
+.modal{background:#fff;border-radius:18px;box-shadow:var(--shadow-lg);width:100%;max-width:640px;display:flex;flex-direction:column;animation:pop .16s ease-out;margin:auto 0}
+.modal.lg{max-width:980px}.modal.xl{max-width:1240px}.modal.sm{max-width:440px}
+@keyframes pop{from{transform:translateY(8px);opacity:0}}
+.modal-h{display:flex;align-items:center;gap:12px;padding:18px 22px;border-bottom:1px solid var(--line)}
+.modal-h h3{flex:1;font-size:18px}
+.modal-b{padding:20px 22px}
+.modal-f{display:flex;gap:10px;justify-content:flex-end;padding:14px 22px;border-top:1px solid var(--line);flex-wrap:wrap;background:#FAFCFE;border-radius:0 0 18px 18px}
+.kv{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:12px 20px;margin-bottom:16px}
+.kv div small{display:block;color:var(--muted);font-size:12.5px}
+.kv div b{font-weight:600;word-break:break-word}
+.alert{border-radius:12px;padding:12px 14px;font-size:14px;margin-bottom:14px;display:flex;gap:10px;align-items:flex-start}
+.alert.info{background:var(--info-l);color:#0A4F87}.alert.warn{background:var(--warn-l);color:#7A4F0E}.alert.err{background:var(--danger-l);color:#9B1C20}.alert.ok{background:var(--ok-l);color:#00634F}
+
+/* ---------- Toast ---------- */
+#toasts{position:fixed;right:16px;bottom:16px;z-index:200;display:flex;flex-direction:column;gap:10px;max-width:min(420px,calc(100vw - 32px))}
+.toast{background:var(--navy);color:#fff;border-radius:12px;padding:12px 16px;box-shadow:var(--shadow-lg);display:flex;gap:10px;align-items:flex-start;font-size:14.5px;animation:pop .2s}
+.toast.ok{border-left:4px solid var(--emerald)}.toast.err{border-left:4px solid var(--danger)}.toast.warn{border-left:4px solid var(--orange)}
+.toast small{display:block;opacity:.6;font-size:11.5px}
+
+/* ---------- Notifications ---------- */
+.notif{display:flex;gap:12px;padding:14px 18px;border-bottom:1px solid var(--line);cursor:pointer;align-items:flex-start}
+.notif:hover{background:#FAFCFE}
+.notif.unread{background:#F5FAFF}
+.notif .sev{width:10px;height:10px;border-radius:50%;margin-top:7px;flex:none}
+.sev-CRITICAL{background:var(--danger)}.sev-HIGH{background:var(--orange)}.sev-MEDIUM{background:var(--blue)}.sev-LOW{background:#9AA9BC}
+.notif .t{font-weight:600}.notif .m{color:var(--muted);font-size:14px}
+
+.line-item{border:1px solid var(--line);border-radius:12px;padding:12px;margin-bottom:10px;background:#FBFDFF}
+.line-item .grid{gap:0 10px}
+.line-item .field{margin-bottom:8px}
+.conv{font-size:12.5px;color:var(--blue-d);background:var(--blue-l);border-radius:8px;padding:4px 8px;display:inline-block}
+.section-title{font-size:15px;margin:6px 0 12px;display:flex;align-items:center;gap:8px}
+.steps{counter-reset:s;list-style:none;padding:0;margin:12px auto 0;max-width:520px;text-align:left}
+.steps li{counter-increment:s;padding:8px 0 8px 40px;position:relative}
+.steps li::before{content:counter(s);position:absolute;left:0;top:6px;width:28px;height:28px;border-radius:50%;background:var(--emerald-l);color:var(--emerald-d);font-weight:700;display:grid;place-items:center}
+#print-area{display:none}
+
+/* ---------- Responsive ---------- */
+@media (max-width:1100px){.charts{grid-template-columns:1fr}.lists{grid-template-columns:1fr}.g4{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media (max-width:900px){
+  #login-view{grid-template-columns:1fr}.login-hero{display:none}
+  .sidebar{transform:translateX(-100%);width:var(--sidebar)!important}
+  body.nav-open .sidebar{transform:none}
+  .main,body.collapsed .main{margin-left:0}
+  body.collapsed .sidebar .brand-name,body.collapsed .nav a span,body.collapsed .nav-group,body.collapsed .side-foot{display:revert}
+  .user-chip .meta{display:none}
+  .content{padding:16px}
+  .g3{grid-template-columns:repeat(2,minmax(0,1fr))}
+}
+@media (max-width:600px){
+  .g2,.g3,.g4{grid-template-columns:1fr}.span2,.span3{grid-column:auto}
+  .cards{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+  .stat{padding:12px;flex-direction:column;gap:8px}.stat .val{font-size:21px}
+  .topbar{padding:0 12px}.topbar h1{font-size:16px}
+  .modal-layer{padding:0}.modal{border-radius:0;min-height:100vh}
+  .modal-f{border-radius:0}
+  .panel-h,.panel-b{padding-left:14px;padding-right:14px}
+  .toolbar>*{flex:1 1 140px}
+}
+@media print{
+  body{background:#fff}
+  #app-view,#login-view,#toasts,.modal-layer{display:none!important}
+  #print-area{display:block!important;font-size:12.5px;color:#000}
+  #print-area h2{font-size:17px;margin:2px 0}
+  #print-area table{width:100%;border-collapse:collapse;margin-top:10px}
+  #print-area th,#print-area td{border:1px solid #999;padding:4px 6px;text-align:left}
+  #print-area td.num,#print-area th.num{text-align:right}
+  #print-area .sign{display:flex;justify-content:space-around;margin-top:40px;text-align:center}
+  @page{size:A4;margin:12mm}
+}
+</style>
+</head>
+
+<body>
+<!-- ============================ LOGIN ============================ -->
+<div id="login-view" class="hidden">
+  <section class="login-hero">
+    <div class="brand"><div class="brand-logo" data-ic="cross"></div><div class="brand-name">BN Smart MedSupply<small>รพ.สต.บึงเนียม · อ.เมือง จ.ขอนแก่น</small></div></div>
+    <div>
+      <h1>ระบบบริหารจัดการคลัง<br>เวชภัณฑ์มิใช่ยาอัจฉริยะ</h1>
+      <p>รับเวชภัณฑ์จากโรงพยาบาลขอนแก่น เบิก–อนุมัติ–จ่ายจริง ควบคุมล็อตและวันหมดอายุแบบ FEFO ตรวจนับ และรายงานจากข้อมูลจริงใน Google Sheets</p>
+    </div>
+    <div class="hero-feats">
+      <div class="hero-feat"><span data-ic="layers"></span>ยอดคงเหลือคำนวณจากบัญชีธุรกรรมที่ยืนยันแล้ว</div>
+      <div class="hero-feat"><span data-ic="clock"></span>ป้องกันจ่ายล็อตหมดอายุ/กักกันอัตโนมัติ</div>
+      <div class="hero-feat"><span data-ic="shield"></span>ตรวจสิทธิ์ทุกคำสั่งที่ฝั่งเซิร์ฟเวอร์</div>
+      <div class="hero-feat"><span data-ic="history"></span>ประวัติตรวจสอบย้อนหลังได้ทุกการดำเนินการ</div>
+    </div>
+  </section>
+  <section class="login-panel">
+    <form class="login-card" id="login-form" autocomplete="on" novalidate>
+      <div class="brand" style="margin-bottom:22px"><div class="brand-logo" data-ic="cross"></div><div class="brand-name" style="color:var(--navy)">BN Smart MedSupply<small style="color:var(--muted)">รพ.สต.บึงเนียม</small></div></div>
+      <h2>เข้าสู่ระบบ</h2>
+      <div class="sub">กรอกชื่อผู้ใช้และรหัสผ่านที่ได้รับจากผู้ดูแลระบบ</div>
+      <div id="login-alert"></div>
+      <div class="field"><label for="lg-user">ชื่อผู้ใช้</label><input class="input" id="lg-user" name="username" autocomplete="username" maxlength="100" required></div>
+      <div class="field"><label for="lg-pass">รหัสผ่าน</label><input class="input" id="lg-pass" name="password" type="password" autocomplete="current-password" maxlength="128" required></div>
+      <button class="btn primary block" id="lg-btn" type="submit">เข้าสู่ระบบ</button>
+      <div class="login-foot" id="login-foot"></div>
+    </form>
+  </section>
+</div>
+
+<!-- ============================ APP ============================ -->
+<div id="app-view" class="hidden">
+  <aside class="sidebar" id="sidebar">
+    <div class="brand"><div class="brand-logo" data-ic="cross"></div><div class="brand-name">BN Smart MedSupply<small>รพ.สต.บึงเนียม</small></div></div>
+    <nav class="nav" id="nav"></nav>
+    <div class="side-foot" id="side-foot"></div>
+  </aside>
+  <div class="backdrop hidden" id="backdrop"></div>
+  <div class="main">
+    <header class="topbar">
+      <button class="btn ghost icon" id="btn-menu" title="ย่อ/ขยายเมนู" aria-label="ย่อ/ขยายเมนู"><span data-ic="menu"></span></button>
+      <h1 id="page-title">Dashboard</h1>
+      <div class="top-actions">
+        <button class="btn ghost icon bell" id="btn-bell" title="การแจ้งเตือน" aria-label="การแจ้งเตือน"><span data-ic="bell"></span><span class="dot hidden" id="bell-dot"></span></button>
+        <div class="user-chip" id="user-chip" tabindex="0">
+          <div class="avatar" id="u-avatar">?</div>
+          <div class="meta"><b id="u-name">-</b><small id="u-role">-</small></div>
+          <div class="dropdown hidden" id="user-menu">
+            <a data-act="profile"><span data-ic="user"></span>ข้อมูลผู้ใช้</a>
+            <a data-act="password"><span data-ic="key"></span>เปลี่ยนรหัสผ่าน</a>
+            <a data-act="logout" style="color:var(--danger)"><span data-ic="logout"></span>ออกจากระบบ</a>
+          </div>
+        </div>
+      </div>
+    </header>
+    <main class="content" id="content"></main>
+  </div>
+</div>
+
+<div id="modal-root"></div>
+<div id="toasts" aria-live="polite"></div>
+<div id="print-area"></div>
+
+<script>
+/* =====================================================================
+ *  การตั้งค่า (แก้ไขจุดเดียว)
+ *  - ใช้ผ่าน Apps Script HTML Service (แนะนำ): ไม่ต้องแก้ค่านี้ ระบบใช้ google.script.run อัตโนมัติ
+ *  - ใช้แบบไฟล์ HTML Standalone: วาง URL ของ Web App (ลงท้าย /exec) ที่ Deploy แล้ว
+ * ===================================================================== */
+const GAS_API_URL = "https://script.google.com/macros/s/AKfycbyb-R15-cv91dHIM6Lskt3JweK0waHN44CzIKao-lxuwI2qIiLQueosu5nw93ICo51m7Q/exec";
+
+/* ============================ Icons ============================ */
+const ICONS = {
+  cross:'<path d="M9 3h6v6h6v6h-6v6H9v-6H3V9h6z"/>',
+  dashboard:'<rect x="3" y="3" width="7" height="9" rx="1.5"/><rect x="14" y="3" width="7" height="5" rx="1.5"/><rect x="14" y="12" width="7" height="9" rx="1.5"/><rect x="3" y="16" width="7" height="5" rx="1.5"/>',
+  box:'<path d="M21 8l-9-5-9 5 9 5 9-5z"/><path d="M3 8v8l9 5 9-5V8"/><path d="M12 13v8"/>',
+  truck:'<path d="M1 4h14v12H1z"/><path d="M15 9h4l3 3v4h-7"/><circle cx="5.5" cy="18" r="2"/><circle cx="18.5" cy="18" r="2"/>',
+  clipboard:'<rect x="5" y="4" width="14" height="17" rx="2"/><path d="M9 4V3h6v1"/><path d="M9 10h6M9 14h6M9 18h4"/>',
+  layers:'<path d="M12 2l10 5-10 5L2 7z"/><path d="M2 12l10 5 10-5"/><path d="M2 17l10 5 10-5"/>',
+  check:'<path d="M20 6L9 17l-5-5"/>',
+  count:'<rect x="3" y="3" width="18" height="18" rx="2"/><path d="M8 12l3 3 5-6"/>',
+  bell:'<path d="M18 8a6 6 0 10-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 01-3.4 0"/>',
+  chart:'<path d="M3 3v18h18"/><path d="M7 15l4-4 3 3 6-6"/>',
+  users:'<circle cx="9" cy="8" r="4"/><path d="M1 21v-1a6 6 0 0112 0v1"/><path d="M16 3.5a4 4 0 010 9M23 21v-1a6 6 0 00-4-5.6"/>',
+  user:'<circle cx="12" cy="8" r="4"/><path d="M4 21v-1a8 8 0 0116 0v1"/>',
+  shield:'<path d="M12 2l8 4v6c0 5-3.5 8.5-8 10-4.5-1.5-8-5-8-10V6z"/>',
+  history:'<path d="M3 3v6h6"/><path d="M3.5 15a9 9 0 102-9.5L3 9"/><path d="M12 7v5l3 3"/>',
+  settings:'<circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 00.3 1.8l.1.1a2 2 0 11-2.8 2.8l-.1-.1a1.7 1.7 0 00-1.8-.3 1.7 1.7 0 00-1 1.5V21a2 2 0 01-4 0v-.1a1.7 1.7 0 00-1.1-1.5 1.7 1.7 0 00-1.8.3l-.1.1a2 2 0 11-2.8-2.8l.1-.1a1.7 1.7 0 00.3-1.8 1.7 1.7 0 00-1.5-1H3a2 2 0 010-4h.1a1.7 1.7 0 001.5-1.1 1.7 1.7 0 00-.3-1.8l-.1-.1a2 2 0 112.8-2.8l.1.1a1.7 1.7 0 001.8.3H9a1.7 1.7 0 001-1.5V3a2 2 0 014 0v.1a1.7 1.7 0 001 1.5 1.7 1.7 0 001.8-.3l.1-.1a2 2 0 112.8 2.8l-.1.1a1.7 1.7 0 00-.3 1.8V9a1.7 1.7 0 001.5 1H21a2 2 0 010 4h-.1a1.7 1.7 0 00-1.5 1z"/>',
+  logout:'<path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/><path d="M16 17l5-5-5-5M21 12H9"/>',
+  key:'<circle cx="7.5" cy="15.5" r="4.5"/><path d="M10.7 12.3L21 2M16 7l3 3M18 5l2 2"/>',
+  menu:'<path d="M3 6h18M3 12h18M3 18h18"/>',
+  plus:'<path d="M12 5v14M5 12h14"/>',
+  search:'<circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/>',
+  x:'<path d="M18 6L6 18M6 6l12 12"/>',
+  printer:'<path d="M6 9V2h12v7"/><rect x="2" y="9" width="20" height="8" rx="2"/><path d="M6 14h12v8H6z"/>',
+  download:'<path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><path d="M7 10l5 5 5-5M12 15V3"/>',
+  upload:'<path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><path d="M17 8l-5-5-5 5M12 3v12"/>',
+  alert:'<path d="M10.3 3.9L1.8 18a2 2 0 001.7 3h17a2 2 0 001.7-3L13.7 3.9a2 2 0 00-3.4 0z"/><path d="M12 9v4M12 17h.01"/>',
+  refresh:'<path d="M23 4v6h-6M1 20v-6h6"/><path d="M3.5 9a9 9 0 0114.9-3.4L23 10M1 14l4.6 4.4A9 9 0 0020.5 15"/>',
+  clock:'<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>',
+  edit:'<path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 013 3L7 19l-4 1 1-4z"/>',
+  undo:'<path d="M3 7v6h6"/><path d="M21 17a9 9 0 00-15-6.7L3 13"/>',
+  trash:'<path d="M3 6h18M8 6V4h8v2M19 6l-1 14H6L5 6"/>',
+  inbox:'<path d="M22 12h-6l-2 3h-4l-2-3H2"/><path d="M5.5 5h13L22 12v6a2 2 0 01-2 2H4a2 2 0 01-2-2v-6z"/>',
+  money:'<rect x="2" y="6" width="20" height="12" rx="2"/><circle cx="12" cy="12" r="3"/><path d="M6 12h.01M18 12h.01"/>',
+  db:'<ellipse cx="12" cy="5" rx="8" ry="3"/><path d="M4 5v14c0 1.7 3.6 3 8 3s8-1.3 8-3V5"/><path d="M4 12c0 1.7 3.6 3 8 3s8-1.3 8-3"/>',
+  move:'<path d="M5 9l-3 3 3 3M9 5l3-3 3 3M15 19l-3 3-3-3M19 9l3 3-3 3M2 12h20M12 2v20"/>',
+  paperclip:'<path d="M21.4 11l-9.2 9.2a6 6 0 01-8.5-8.5l9.2-9.2a4 4 0 015.7 5.7l-9.2 9.2a2 2 0 01-2.8-2.8l8.5-8.5"/>'
+};
+function ic(name, cls) { return `<svg class="ic ${cls || ''}" viewBox="0 0 24 24" aria-hidden="true">${ICONS[name] || ''}</svg>`; }
+function hydrateIcons(root) { (root || document).querySelectorAll('[data-ic]').forEach(el => { el.innerHTML = ic(el.dataset.ic); el.removeAttribute('data-ic'); }); }
+
+/* ============================ Utils ============================ */
+const $ = (s, r) => (r || document).querySelector(s);
+const $$ = (s, r) => Array.from((r || document).querySelectorAll(s));
+function esc(v) { return v === null || v === undefined ? '' : String(v).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c])); }
+function fmtNum(n, d) { if (n === null || n === undefined || n === '') return ''; const x = Number(n); if (!isFinite(x)) return esc(n); return x.toLocaleString('th-TH', { maximumFractionDigits: d === undefined ? 2 : d }); }
+function fmtMoney(n) { if (n === null || n === undefined || n === '') return ''; return Number(n).toLocaleString('th-TH', { minimumFractionDigits: 2, maximumFractionDigits: 2 }); }
+const TH_MONTHS = ['ม.ค.', 'ก.พ.', 'มี.ค.', 'เม.ย.', 'พ.ค.', 'มิ.ย.', 'ก.ค.', 'ส.ค.', 'ก.ย.', 'ต.ค.', 'พ.ย.', 'ธ.ค.'];
+function fmtDate(s) { if (!s) return ''; s = String(s); const m = s.match(/^(\d{4})-(\d{2})-(\d{2})/); if (!m) return esc(s); return `${+m[3]} ${TH_MONTHS[+m[2] - 1]} ${+m[1] + 543}`; }
+function fmtDateTime(s) { if (!s) return ''; const t = String(s).substring(11, 16); return fmtDate(s) + (t ? ' ' + t + ' น.' : ''); }
+function fmtMonth(ym) { const [y, m] = ym.split('-'); return TH_MONTHS[+m - 1] + ' ' + String(+y + 543).slice(-2); }
+function todayIso() { const d = new Date(); return new Date(d.getTime() - d.getTimezoneOffset() * 60000).toISOString().substring(0, 10); }
+function addDays(iso, n) { const d = new Date(iso + 'T00:00:00'); d.setDate(d.getDate() + n); return new Date(d.getTime() - d.getTimezoneOffset() * 60000).toISOString().substring(0, 10); }
+function uid() { return (window.crypto && crypto.randomUUID) ? crypto.randomUUID() : 'c' + Date.now().toString(36) + Math.random().toString(36).slice(2); }
+function debounce(fn, ms) { let t; return (...a) => { clearTimeout(t); t = setTimeout(() => fn(...a), ms || 250); }; }
+function store(k, v) { try { if (v === undefined) return sessionStorage.getItem(k); if (v === null) sessionStorage.removeItem(k); else sessionStorage.setItem(k, v); } catch (e) { return null; } }
+
+const STATUS_TH = {
+  Draft: ['ร่าง', 'b-gray'], Posting: ['กำลังบันทึก', 'b-warn'], Confirmed: ['ยืนยันแล้ว', 'b-green'], Reversed: ['กลับรายการ', 'b-red'], Cancelled: ['ยกเลิก', 'b-gray'],
+  Submitted: ['ส่งแล้ว', 'b-blue'], PendingApproval: ['รออนุมัติ', 'b-orange'], Approved: ['อนุมัติแล้ว', 'b-blue'], PartiallyIssued: ['จ่ายบางส่วน', 'b-warn'],
+  Issued: ['จ่ายแล้ว', 'b-green'], Rejected: ['ไม่อนุมัติ', 'b-red'], Open: ['กำลังตรวจนับ', 'b-blue'],
+  ACTIVE: ['ใช้งานได้', 'b-green'], QUARANTINE: ['กักกัน', 'b-orange'], DAMAGED: ['ชำรุด', 'b-red'], EXPIRED: ['หมดอายุ', 'b-red'],
+  SUCCESS: ['สำเร็จ', 'b-green'], FAILED: ['ล้มเหลว', 'b-red'], DENIED: ['ไม่มีสิทธิ์', 'b-red'], LOCKED: ['ล็อก', 'b-orange'], RATE_LIMITED: ['ถูกจำกัด', 'b-orange'],
+  CRITICAL: ['วิกฤต', 'b-red'], HIGH: ['สูง', 'b-orange'], MEDIUM: ['กลาง', 'b-blue'], LOW: ['ต่ำ', 'b-gray']
+};
+function badge(s) { const x = STATUS_TH[s] || [s, 'b-gray']; return `<span class="badge ${x[1]}">${esc(x[0])}</span>`; }
+const TXN_TH = { RECEIPT: 'รับเข้า', ISSUE: 'จ่าย', RETURN: 'รับคืน', ADJUSTMENT_IN: 'ปรับเพิ่ม', ADJUSTMENT_OUT: 'ปรับลด', DAMAGE: 'ตัดชำรุด', EXPIRED: 'ตัดหมดอายุ', TRANSFER_IN: 'โอนเข้า', TRANSFER_OUT: 'โอนออก', REVERSAL: 'กลับรายการ' };
+
+/* ============================ App State ============================ */
+const S = { token: null, user: null, perms: [], config: {}, items: null, categories: null, suppliers: null, page: null, charts: [], expiresAt: null };
+const can = (...p) => p.some(x => S.perms.includes(x));
+
+/* ============================ API Transport ============================ */
+const HAS_GSR = typeof google !== 'undefined' && google.script && google.script.run;
+function apiConfigured() { return HAS_GSR || (/^https:\/\/script\.google\.com\/.+\/exec/.test(GAS_API_URL)); }
+
+/**
+ * เรียก Backend: คืนค่า response มาตรฐาน {success,message,data,errorCode,requestId}
+ * - HTML Service: google.script.run.api(req)
+ * - Standalone: fetch POST text/plain (ไม่เกิด CORS preflight และอ่าน JSON ตอบกลับได้จริง)
+ */
+async function rawApi(action, payload, clientRequestId) {
+  const req = { action, payload: payload || {}, token: S.token, clientRequestId: clientRequestId || null };
+  if (HAS_GSR) {
+    return new Promise((resolve) => {
+      google.script.run.withSuccessHandler(r => resolve(r || { success: false, message: 'ไม่ได้รับคำตอบจากเซิร์ฟเวอร์', errorCode: 'NO_RESPONSE' }))
+        .withFailureHandler(err => resolve({ success: false, message: 'เชื่อมต่อเซิร์ฟเวอร์ไม่สำเร็จ: ' + (err && err.message ? err.message : err), errorCode: 'NETWORK_ERROR' }))
+        .api(req);
+    });
+  }
+  if (!apiConfigured()) return { success: false, message: 'ยังไม่ได้ตั้งค่า GAS_API_URL ในไฟล์ index.html (ต้องเป็น URL ที่ลงท้ายด้วย /exec)', errorCode: 'CONFIG_ERROR' };
+  try {
+    const res = await fetch(GAS_API_URL, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify(req), redirect: 'follow', cache: 'no-store' });
+    const text = await res.text();
+    try { return JSON.parse(text); }
+    catch (e) { return { success: false, message: 'เซิร์ฟเวอร์ตอบกลับไม่ใช่ JSON — ตรวจสอบการ Deploy (Who has access) และ URL /exec', errorCode: 'BAD_RESPONSE' }; }
+  } catch (e) {
+    return { success: false, message: 'เชื่อมต่อเซิร์ฟเวอร์ไม่สำเร็จ (เครือข่ายหรือ CORS) — ' + e.message, errorCode: 'NETWORK_ERROR' };
+  }
+}
+
+/** api(): ใช้กับคำสั่งทั่วไป — จัดการ Session หมดอายุ/ต้องเปลี่ยนรหัสผ่านให้อัตโนมัติ และ throw เมื่อไม่สำเร็จ */
+async function api(action, payload, opts) {
+  opts = opts || {};
+  const r = await rawApi(action, payload, opts.mutate ? (opts.cid || uid()) : null);
+  if (!r.success) {
+    if (r.errorCode === 'SESSION_EXPIRED' || r.errorCode === 'AUTH_REQUIRED') { endSession(r.message); throw Object.assign(new Error(r.message), { code: r.errorCode, handled: true }); }
+    if (r.errorCode === 'PASSWORD_CHANGE_REQUIRED') { openChangePassword(true); throw Object.assign(new Error(r.message), { code: r.errorCode, handled: true }); }
+    throw Object.assign(new Error(r.message || 'ไม่สามารถดำเนินการได้'), { code: r.errorCode, requestId: r.requestId });
+  }
+  if (opts.toast !== false && opts.mutate && r.message) toast(r.message, 'ok');
+  return r.data;
+}
+
+/** ป้องกันการกดซ้ำ: ปุ่มถูกปิดระหว่างทำงาน และใช้ clientRequestId เดียวกันตลอดการกดครั้งนั้น */
+async function withBtn(btn, fn) {
+  if (!btn || btn.dataset.busy) return;
+  btn.dataset.busy = '1'; btn.disabled = true;
+  const html = btn.innerHTML;
+  btn.innerHTML = '<span class="spin"></span> กำลังดำเนินการ…';
+  try { return await fn(); }
+  catch (e) { if (!e.handled) toast(e.message, 'err', e.requestId); }
+  finally { delete btn.dataset.busy; btn.disabled = false; btn.innerHTML = html; }
+}
+
+/* ============================ UI helpers ============================ */
+function toast(msg, type, sub) {
+  const el = document.createElement('div');
+  el.className = 'toast ' + (type || '');
+  el.innerHTML = ic(type === 'err' ? 'alert' : type === 'warn' ? 'alert' : 'check') + `<div>${esc(msg)}${sub ? `<small>อ้างอิง ${esc(sub)}</small>` : ''}</div>`;
+  $('#toasts').appendChild(el);
+  setTimeout(() => el.remove(), type === 'err' ? 8000 : 4500);
+}
+function loadingHtml(t) { return `<div class="loading"><div class="spin"></div><div>${esc(t || 'กำลังโหลดข้อมูล…')}</div></div>`; }
+function emptyHtml(title, text, icon) { return `<div class="empty">${ic(icon || 'inbox')}<h4>${esc(title || 'ไม่พบข้อมูล')}</h4><div>${text || ''}</div></div>`; }
+function errorHtml(msg) { return `<div class="alert err">${ic('alert')}<div>${esc(msg)}</div></div>`; }
+
+let modalStack = [];
+/** เปิด Modal: คืนค่า {el, close, body, footer} */
+function openModal(o) {
+  const layer = document.createElement('div');
+  layer.className = 'modal-layer';
+  layer.innerHTML = `<div class="modal ${o.size || ''}" role="dialog" aria-modal="true"><div class="modal-h"><h3>${esc(o.title)}</h3>${o.locked ? '' : `<button class="btn ghost icon" data-close aria-label="ปิด">${ic('x')}</button>`}</div><div class="modal-b"></div>${o.footer === false ? '' : '<div class="modal-f"></div>'}</div>`;
+  const body = $('.modal-b', layer), footer = $('.modal-f', layer);
+  if (typeof o.body === 'string') body.innerHTML = o.body; else if (o.body) body.appendChild(o.body);
+  const m = { el: layer, body, footer, close: () => { layer.remove(); modalStack = modalStack.filter(x => x !== m); if (o.onClose) o.onClose(); } };
+  if (!o.locked) {
+    $$('[data-close]', layer).forEach(b => b.onclick = m.close);
+    layer.addEventListener('mousedown', e => { if (e.target === layer && o.dismissable !== false) m.close(); });
+  }
+  if (footer) {
+    (o.buttons || [{ label: 'ปิด', onClick: () => m.close() }]).forEach(b => {
+      const btn = document.createElement('button');
+      btn.className = 'btn ' + (b.cls || ''); btn.type = 'button'; btn.innerHTML = (b.icon ? ic(b.icon) : '') + esc(b.label);
+      if (b.hidden) btn.classList.add('hidden');
+      if (b.id) btn.id = b.id;
+      btn.onclick = () => b.onClick(btn, m);
+      footer.appendChild(btn);
+    });
+  }
+  $('#modal-root').appendChild(layer);
+  modalStack.push(m);
+  hydrateIcons(layer);
+  const f = $('input:not([type=hidden]):not([readonly]),select,textarea', body); if (f && !o.noFocus) setTimeout(() => f.focus(), 30);
+  return m;
+}
+function closeAllModals() { modalStack.slice().forEach(m => m.close()); }
+document.addEventListener('keydown', e => { if (e.key === 'Escape' && modalStack.length) { const top = modalStack[modalStack.length - 1]; if (!top.el.querySelector('.modal-h [data-close]')) return; top.close(); } });
+
+/** ยืนยัน / ขอเหตุผล: คืนค่า Promise (null = ยกเลิก) */
+function confirmBox(title, html, opts) {
+  opts = opts || {};
+  return new Promise(resolve => {
+    const body = `<div>${html || ''}</div>${opts.reason ? `<div class="field" style="margin-top:12px"><label>${esc(opts.reasonLabel || 'เหตุผล')} <span class="req">*</span></label><textarea class="input" id="cf-reason" maxlength="500"></textarea></div>` : ''}`;
+    let done = false;
+    const m = openModal({
+      title, body, size: 'sm', onClose: () => { if (!done) resolve(null); }, buttons: [
+        { label: 'ยกเลิก', onClick: (b, mm) => mm.close() },
+        { label: opts.okLabel || 'ยืนยัน', cls: opts.danger ? 'danger' : 'primary', onClick: (b, mm) => {
+          let reason = true;
+          if (opts.reason) { reason = $('#cf-reason', mm.el).value.trim(); if (!reason) { $('#cf-reason', mm.el).classList.add('invalid'); toast('กรุณาระบุเหตุผล', 'warn'); return; } }
+          done = true; mm.close(); resolve(reason);
+        } }
+      ]
+    });
+  });
+}
+
+/** ตารางแบบมีค้นหา/แบ่งหน้า ฝั่ง Client */
+function renderTable(container, o) {
+  const pageSize = o.pageSize || 50;
+  let page = 0;
+  const draw = () => {
+    const rows = o.rows || [];
+    if (!rows.length) { container.innerHTML = emptyHtml(o.emptyTitle || 'ยังไม่มีข้อมูล', o.emptyText || ''); return; }
+    const pages = Math.ceil(rows.length / pageSize);
+    if (page >= pages) page = pages - 1;
+    const slice = rows.slice(page * pageSize, page * pageSize + pageSize);
+    const th = o.columns.map(c => `<th class="${c.num ? 'num' : ''}">${esc(c.label)}</th>`).join('');
+    const tb = slice.map((r, i) => `<tr class="${o.onRow ? 'click' : ''}" data-i="${page * pageSize + i}">${o.columns.map(c => `<td class="${c.num ? 'num' : ''}">${c.render ? c.render(r) : esc(r[c.key])}</td>`).join('')}</tr>`).join('');
+    const foot = o.footer ? `<tfoot><tr>${o.footer}</tr></tfoot>` : '';
+    container.innerHTML = `<div class="table-wrap"><table class="tbl"><thead><tr>${th}</tr></thead><tbody>${tb}</tbody>${foot}</table></div>` +
+      (pages > 1 ? `<div class="pager">แสดง ${page * pageSize + 1}–${Math.min(rows.length, (page + 1) * pageSize)} จาก ${rows.length} <button class="btn sm" data-p="-1" ${page ? '' : 'disabled'}>ก่อนหน้า</button><button class="btn sm" data-p="1" ${page < pages - 1 ? '' : 'disabled'}>ถัดไป</button></div>` : (o.showCount !== false ? `<div class="pager">ทั้งหมด ${rows.length} รายการ</div>` : ''));
+    $$('[data-p]', container).forEach(b => b.onclick = () => { page += +b.dataset.p; draw(); });
+    if (o.onRow) $$('tbody tr', container).forEach(tr => tr.onclick = (e) => { if (e.target.closest('button,a,input,select')) return; o.onRow(rows[+tr.dataset.i]); });
+    if (o.after) o.after(container, rows);
+  };
+  draw();
+}
+
+function optionList(list, valKey, labelFn, selected, placeholder) {
+  return (placeholder !== undefined ? `<option value="">${esc(placeholder)}</option>` : '') + list.map(x => `<option value="${esc(x[valKey])}" ${String(x[valKey]) === String(selected) ? 'selected' : ''}>${esc(labelFn(x))}</option>`).join('');
+}
+function formData(root) {
+  const o = {};
+  $$('[name]', root).forEach(el => { o[el.name] = el.type === 'checkbox' ? el.checked : el.value.trim(); });
+  return o;
+}
+function requireFields(root, names) {
+  let ok = true;
+  names.forEach(n => { const el = $(`[name="${n}"]`, root); if (el && !el.value.trim()) { el.classList.add('invalid'); ok = false; } else if (el) el.classList.remove('invalid'); });
+  if (!ok) toast('กรุณากรอกข้อมูลที่จำเป็นให้ครบ', 'warn');
+  return ok;
+}
+
+/* ===== Master data cache ===== */
+async function loadMaster(force) {
+  const jobs = [];
+  if (can('VIEW_INVENTORY') && (force || !S.items)) jobs.push(api('getItems', { status: 'all' }).then(d => S.items = d));
+  if (can('VIEW_INVENTORY') && (force || !S.categories)) jobs.push(api('getCategories').then(d => S.categories = d));
+  if (can('VIEW_RECEIPTS', 'EDIT_ITEMS', 'VIEW_REPORTS') && (force || !S.suppliers)) jobs.push(api('getSuppliers').then(d => S.suppliers = d));
+  await Promise.all(jobs);
+}
+function itemById(id) { return (S.items || []).find(i => i.ItemID === id); }
+function itemLabel(i) { return i ? `${i.ItemCode} — ${i.ItemName}` : ''; }
+function itemDatalist(id, onlyActive) {
+  return `<datalist id="${id}">${(S.items || []).filter(i => !onlyActive || i.IsActive).map(i => `<option value="${esc(itemLabel(i))}"></option>`).join('')}</datalist>`;
+}
+function findItemByLabel(v) { v = (v || '').trim(); return (S.items || []).find(i => itemLabel(i) === v || i.ItemCode === v); }
+function unitOptions(item, sel) {
+  if (!item) return '<option value="">-</option>';
+  const opts = [item.BaseUnit];
+  if (item.PurchaseUnit && item.PurchaseUnit !== item.BaseUnit) opts.push(item.PurchaseUnit);
+  return opts.map(u => `<option ${u === sel ? 'selected' : ''}>${esc(u)}</option>`).join('');
+}
+function factorOf(item, unit) { return item && unit && unit === item.PurchaseUnit && item.PurchaseUnit !== item.BaseUnit ? Number(item.ConversionFactor) || 1 : 1; }
+
+/** อ่านไฟล์เป็น base64 (สำหรับแนบเอกสาร) */
+function fileToBase64(file) {
+  return new Promise((res, rej) => { const r = new FileReader(); r.onload = () => res(String(r.result).split(',')[1]); r.onerror = () => rej(new Error('อ่านไฟล์ไม่สำเร็จ')); r.readAsDataURL(file); });
+}
+function downloadText(name, text, mime) {
+  const blob = new Blob(['﻿' + text], { type: mime || 'text/csv;charset=utf-8' });
+  const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = name;
+  document.body.appendChild(a); a.click(); setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 1000);
+}
+/** พิมพ์: สร้างเนื้อหาในพื้นที่พิมพ์แล้วเรียกหน้าพิมพ์ของเบราว์เซอร์ (เลือก "บันทึกเป็น PDF" ได้) */
+function printDoc(title, innerHtml, opts) {
+  opts = opts || {};
+  const org = S.config.org || 'โรงพยาบาลส่งเสริมสุขภาพตำบลบึงเนียม';
+  $('#print-area').innerHTML = `<div style="text-align:center"><b>${esc(org)}</b><br><span>${esc(S.config.orgAddress || '')}</span><h2>${esc(title)}</h2></div>
+    ${innerHtml}
+    <div style="margin-top:14px;font-size:11px;color:#444">จัดทำโดย ${esc(S.user.FullName || S.user.Username)} · พิมพ์เมื่อ ${fmtDateTime(localNowIso())} · BN Smart MedSupply</div>
+    ${opts.signs ? `<div class="sign">${opts.signs.map(s => `<div>ลงชื่อ ...................................<br>(${esc(s)})</div>`).join('')}</div>` : ''}`;
+  setTimeout(() => window.print(), 50);
+}
+</script>
+
+<script>
+function localNowIso() { const d = new Date(); return new Date(d.getTime() - d.getTimezoneOffset() * 60000).toISOString().substring(0, 19); }
+
+/* ============================ Auth & Shell ============================ */
+const NAV = [
+  { group: 'ภาพรวม' },
+  { id: 'dashboard', label: 'Dashboard', icon: 'dashboard', perms: ['VIEW_DASHBOARD'] },
+  { id: 'notifications', label: 'การแจ้งเตือน', icon: 'bell', perms: [] },
+  { group: 'งานคลังเวชภัณฑ์' },
+  { id: 'items', label: 'ทะเบียนเวชภัณฑ์', icon: 'box', perms: ['VIEW_INVENTORY'] },
+  { id: 'receipts', label: 'รับเวชภัณฑ์', icon: 'truck', perms: ['VIEW_RECEIPTS'] },
+  { id: 'requisitions', label: 'เบิกจ่ายเวชภัณฑ์', icon: 'clipboard', perms: ['CREATE_REQUISITION', 'VIEW_REQUISITIONS_ALL'] },
+  { id: 'stock', label: 'คลังและยอดคงเหลือ', icon: 'layers', perms: ['VIEW_INVENTORY'] },
+  { id: 'counts', label: 'ตรวจนับสต็อก', icon: 'count', perms: ['STOCK_COUNT', 'APPROVE_ADJUST'] },
+  { group: 'รายงานและระบบ' },
+  { id: 'reports', label: 'รายงาน', icon: 'chart', perms: ['VIEW_REPORTS'] },
+  { id: 'users', label: 'ผู้ใช้งาน', icon: 'users', perms: ['MANAGE_USERS'] },
+  { id: 'audit', label: 'ประวัติการใช้งาน', icon: 'history', perms: ['VIEW_AUDIT'] },
+  { id: 'settings', label: 'ตั้งค่าระบบ', icon: 'settings', perms: ['MANAGE_SETTINGS'] }
+];
+const PAGES = {};
+let notifTimer = null, sessionTimer = null;
+
+function showLogin(msg, type) {
+  $('#app-view').classList.add('hidden');
+  $('#login-view').classList.remove('hidden');
+  $('#login-alert').innerHTML = msg ? `<div class="alert ${type || 'warn'}">${ic('alert')}<div>${esc(msg)}</div></div>` : '';
+  $('#lg-pass').value = '';
+  setTimeout(() => $('#lg-user').focus(), 50);
+}
+
+function endSession(msg) {
+  S.token = null; S.user = null; S.perms = []; S.items = S.categories = S.suppliers = null;
+  store('bn_token', null);
+  clearInterval(notifTimer); clearInterval(sessionTimer);
+  destroyCharts(); closeAllModals();
+  $('#content').innerHTML = '';
+  showLogin(msg || 'Session หมดอายุ กรุณาเข้าสู่ระบบใหม่');
+}
+
+async function enterApp(sess) {
+  S.user = sess.user; S.perms = sess.permissions || []; S.expiresAt = sess.expiresAt;
+  try { S.config = await api('getAppConfig'); } catch (e) { if (e.handled) return; S.config = {}; }
+  $('#u-name').textContent = S.user.FullName || S.user.Username;
+  $('#u-role').textContent = S.user.RoleName || S.user.Role;
+  $('#u-avatar').textContent = (S.user.FullName || S.user.Username || '?').trim().charAt(0).toUpperCase();
+  $('#side-foot').innerHTML = `${esc(S.config.org || '')}<br>v${esc(S.config.version || '')} · ${HAS_GSR ? 'HTML Service' : 'Standalone API'}`;
+  renderNav();
+  $('#login-view').classList.add('hidden');
+  $('#app-view').classList.remove('hidden');
+  navigate('dashboard');
+  refreshBell();
+  clearInterval(notifTimer); notifTimer = setInterval(refreshBell, 180000);
+  clearInterval(sessionTimer); sessionTimer = setInterval(() => { if (S.expiresAt && localNowIso() >= S.expiresAt) endSession('Session หมดอายุ กรุณาเข้าสู่ระบบใหม่'); }, 30000);
+}
+
+function renderNav() {
+  $('#nav').innerHTML = NAV.map(n => {
+    if (n.group) return `<div class="nav-group">${esc(n.group)}</div>`;
+    if (n.perms.length && !can(...n.perms)) return '';
+    return `<a data-page="${n.id}" title="${esc(n.label)}">${ic(n.icon)}<span>${esc(n.label)}</span>${n.id === 'notifications' ? '<span class="badge-count hidden" id="nav-notif"></span>' : ''}</a>`;
+  }).join('').replace(/<div class="nav-group">[^<]*<\/div>(?=<div class="nav-group">|$)/g, '');
+  $$('#nav a').forEach(a => a.onclick = () => { navigate(a.dataset.page); document.body.classList.remove('nav-open'); $('#backdrop').classList.add('hidden'); });
+}
+
+function destroyCharts() { S.charts.forEach(c => { try { c.destroy(); } catch (e) { } }); S.charts = []; }
+
+async function navigate(id, params) {
+  const n = NAV.find(x => x.id === id);
+  if (!n || (n.perms.length && !can(...n.perms))) { toast('ไม่มีสิทธิ์เข้าถึงเมนูนี้', 'err'); return; }
+  S.page = id;
+  $$('#nav a').forEach(a => a.classList.toggle('active', a.dataset.page === id));
+  $('#page-title').textContent = n.label;
+  destroyCharts();
+  const el = $('#content');
+  el.innerHTML = loadingHtml();
+  window.scrollTo(0, 0);
+  try { await PAGES[id](el, params || {}); }
+  catch (e) { if (!e.handled) el.innerHTML = errorHtml(e.message); }
+}
+
+async function refreshBell() {
+  if (!S.token) return;
+  try {
+    const d = await api('getNotifications', { limit: 1 });
+    const dot = $('#bell-dot'), nav = $('#nav-notif');
+    [dot, nav].forEach(x => { if (!x) return; x.textContent = d.unread > 99 ? '99+' : d.unread; x.classList.toggle('hidden', !d.unread); });
+  } catch (e) { }
+}
+
+function openChangePassword(forced) {
+  if ($('#cp-form')) return;
+  const minLen = 8;
+  const m = openModal({
+    title: forced ? 'กรุณาเปลี่ยนรหัสผ่านก่อนใช้งาน' : 'เปลี่ยนรหัสผ่าน', size: 'sm', locked: !!forced, dismissable: !forced,
+    body: `<form id="cp-form" autocomplete="off">${forced ? `<div class="alert warn">${ic('key')}<div>บัญชีนี้ใช้รหัสผ่านเริ่มต้นหรือรหัสชั่วคราว ต้องตั้งรหัสผ่านใหม่ก่อนใช้งานระบบ</div></div>` : ''}
+      <div class="field"><label>รหัสผ่านปัจจุบัน <span class="req">*</span></label><input class="input" type="password" name="currentPassword" autocomplete="current-password"></div>
+      <div class="field"><label>รหัสผ่านใหม่ <span class="req">*</span></label><input class="input" type="password" name="newPassword" autocomplete="new-password"><span class="hint">อย่างน้อย ${minLen} ตัวอักษร มีทั้งตัวอักษรภาษาอังกฤษและตัวเลข</span></div>
+      <div class="field"><label>ยืนยันรหัสผ่านใหม่ <span class="req">*</span></label><input class="input" type="password" name="confirm" autocomplete="new-password"></div></form>`,
+    buttons: [
+      ...(forced ? [{ label: 'ออกจากระบบ', onClick: async () => { await rawApi('logout', {}, uid()); m.close(); endSession('ออกจากระบบแล้ว'); } }] : [{ label: 'ยกเลิก', onClick: (b, mm) => mm.close() }]),
+      { label: 'บันทึกรหัสผ่านใหม่', cls: 'primary', onClick: (btn) => withBtn(btn, async () => {
+        const f = formData(m.el);
+        if (!requireFields(m.el, ['currentPassword', 'newPassword', 'confirm'])) return;
+        if (f.newPassword.length < minLen || !/[A-Za-z]/.test(f.newPassword) || !/\d/.test(f.newPassword)) throw new Error('รหัสผ่านใหม่ต้องมีอย่างน้อย ' + minLen + ' ตัว และมีทั้งตัวอักษรและตัวเลข');
+        if (f.newPassword !== f.confirm) throw new Error('ยืนยันรหัสผ่านไม่ตรงกัน');
+        const r = await rawApi('changePassword', { currentPassword: f.currentPassword, newPassword: f.newPassword }, uid());
+        if (!r.success) { if (r.errorCode === 'SESSION_EXPIRED') { m.close(); endSession(r.message); return; } throw new Error(r.message); }
+        toast(r.message, 'ok');
+        m.close();
+        if (forced) { const v = await rawApi('validateSession'); if (v.success) enterApp(v.data); else endSession(v.message); }
+      }) }
+    ]
+  });
+}
+
+function showProfile() {
+  const u = S.user;
+  openModal({ title: 'ข้อมูลผู้ใช้', size: 'sm', body: `<div class="kv" style="grid-template-columns:1fr 1fr">
+    <div><small>ชื่อผู้ใช้</small><b>${esc(u.Username)}</b></div><div><small>ชื่อ-สกุล</small><b>${esc(u.FullName)}</b></div>
+    <div><small>บทบาท</small><b>${esc(u.RoleName)}</b></div><div><small>หน่วยงาน</small><b>${esc(u.Department || '-')}</b></div>
+    <div><small>เข้าสู่ระบบล่าสุด</small><b>${fmtDateTime(u.LastLoginAt)}</b></div><div><small>Session หมดอายุ</small><b>${fmtDateTime(S.expiresAt)}</b></div></div>
+    <div class="section-title">สิทธิ์ที่ได้รับ</div><div style="display:flex;flex-wrap:wrap;gap:6px">${S.perms.map(p => `<span class="badge b-blue">${esc((S.config.permissions || {})[p] || p)}</span>`).join('')}</div>` });
+}
+
+async function init() {
+  hydrateIcons();
+  $('#login-form').addEventListener('submit', e => {
+    e.preventDefault();
+    const btn = $('#lg-btn');
+    const username = $('#lg-user').value.trim(), password = $('#lg-pass').value;
+    if (!username || !password) { $('#login-alert').innerHTML = `<div class="alert warn">${ic('alert')}<div>กรุณากรอกชื่อผู้ใช้และรหัสผ่าน</div></div>`; return; }
+    withBtn(btn, async () => {
+      $('#login-alert').innerHTML = '';
+      const r = await rawApi('login', { username, password }, uid());
+      if (!r.success) { $('#login-alert').innerHTML = `<div class="alert err">${ic('alert')}<div>${esc(r.message)}</div></div>`; $('#lg-pass').value = ''; return; }
+      S.token = r.data.token; store('bn_token', S.token);
+      $('#lg-pass').value = '';
+      if (r.data.mustChangePassword) { S.user = r.data.user; S.perms = r.data.permissions; openChangePassword(true); return; }
+      await enterApp(r.data);
+    });
+  });
+  $('#btn-menu').onclick = () => {
+    if (window.innerWidth <= 900) { const open = document.body.classList.toggle('nav-open'); $('#backdrop').classList.toggle('hidden', !open); }
+    else { document.body.classList.toggle('collapsed'); try { localStorage.setItem('bn_collapsed', document.body.classList.contains('collapsed') ? '1' : ''); } catch (e) { } }
+  };
+  try { if (localStorage.getItem('bn_collapsed')) document.body.classList.add('collapsed'); } catch (e) { }
+  $('#backdrop').onclick = () => { document.body.classList.remove('nav-open'); $('#backdrop').classList.add('hidden'); };
+  $('#btn-bell').onclick = () => navigate('notifications');
+  $('#user-chip').onclick = (e) => { if (e.target.closest('.dropdown a')) return; $('#user-menu').classList.toggle('hidden'); };
+  document.addEventListener('click', e => { if (!e.target.closest('#user-chip')) $('#user-menu').classList.add('hidden'); });
+  $$('#user-menu a').forEach(a => a.onclick = async () => {
+    $('#user-menu').classList.add('hidden');
+    if (a.dataset.act === 'password') openChangePassword(false);
+    if (a.dataset.act === 'profile') showProfile();
+    if (a.dataset.act === 'logout') {
+      const ok = await confirmBox('ออกจากระบบ', 'ต้องการออกจากระบบหรือไม่?', { okLabel: 'ออกจากระบบ' });
+      if (!ok) return;
+      await rawApi('logout', {}, uid());
+      endSession('ออกจากระบบเรียบร้อยแล้ว');
+      $('#login-alert').innerHTML = `<div class="alert ok">${ic('check')}<div>ออกจากระบบเรียบร้อยแล้ว</div></div>`;
+    }
+  });
+
+  if (!apiConfigured()) {
+    showLogin('ยังไม่ได้ตั้งค่าการเชื่อมต่อ: เปิดไฟล์ index.html แล้ววาง URL Web App (ลงท้าย /exec) ในตัวแปร GAS_API_URL หรือเปิดผ่าน URL ของ Apps Script Web App โดยตรง', 'err');
+    return;
+  }
+  rawApi('getAppConfig').then(r => { if (r.success) $('#login-foot').textContent = `${r.data.org} · เวอร์ชัน ${r.data.version}`; else $('#login-foot').textContent = r.message; });
+  const saved = store('bn_token');
+  if (!saved) { showLogin(); return; }
+  S.token = saved;
+  $('#login-view').classList.add('hidden');
+  document.body.insertAdjacentHTML('beforeend', '<div id="boot" class="loading" style="position:fixed;inset:0;background:var(--bg);z-index:300;padding-top:30vh"><div class="spin"></div><div>กำลังตรวจสอบ Session…</div></div>');
+  const v = await rawApi('validateSession');
+  $('#boot').remove();
+  if (!v.success) { S.token = null; store('bn_token', null); showLogin(v.errorCode === 'NETWORK_ERROR' || v.errorCode === 'CONFIG_ERROR' ? v.message : 'Session หมดอายุ กรุณาเข้าสู่ระบบใหม่'); return; }
+  if (v.data.mustChangePassword) { S.user = v.data.user; S.perms = v.data.permissions; showLogin(); openChangePassword(true); return; }
+  enterApp(v.data);
+}
+
+/* ============================ Dashboard ============================ */
+const CHART_COLORS = { emerald: '#00B894', blue: '#0984E3', orange: '#FF9F43', navy: '#0B1F3A', palette: ['#0984E3', '#00B894', '#FF9F43', '#6C5CE7', '#E17055', '#00CEC9', '#FDCB6E', '#636E72', '#D63031', '#A29BFE'] };
+
+PAGES.dashboard = async (el, params) => {
+  const from = params.from || addDays(todayIso(), -365).substring(0, 8) + '01', to = params.to || todayIso();
+  const d = await api('getDashboardData', { dateFrom: from, dateTo: to });
+  const c = d.cards;
+  const card = (lbl, val, icon, tone, page, unit, hint) => `<div class="stat ${page ? 'link' : ''}" ${page ? `data-go="${page}"` : ''} title="${esc(hint || '')}"><div class="ic-wrap ${tone}">${ic(icon)}</div><div style="min-width:0"><div class="lbl">${esc(lbl)}</div><div class="val">${val}${unit ? ` <small>${esc(unit)}</small>` : ''}</div></div></div>`;
+  el.innerHTML = `
+  <div class="toolbar">
+    <div class="field"><label>ตั้งแต่วันที่</label><input class="input" type="date" id="db-from" value="${from}"></div>
+    <div class="field"><label>ถึงวันที่</label><input class="input" type="date" id="db-to" value="${to}"></div>
+    <button class="btn blue" id="db-go">${ic('refresh')}แสดงข้อมูล</button>
+    <div class="grow"></div>
+    <div class="muted" style="font-size:13px;color:var(--muted)">ข้อมูลจริงจาก Google Sheets · ช่วงกราฟ ${fmtDate(d.range.from)} – ${fmtDate(d.range.to)}</div>
+  </div>
+  ${!d.hasAnyData ? `<div class="panel"><div class="panel-b">${emptyHtml('ยังไม่มีข้อมูลในระบบ', `<ol class="steps"><li>เพิ่มหมวดหมู่และทะเบียนเวชภัณฑ์ที่เมนู <b>ทะเบียนเวชภัณฑ์</b> (หรือนำเข้าจาก Excel ที่เมนูตั้งค่าระบบ)</li><li>บันทึกใบรับจากโรงพยาบาลขอนแก่นที่เมนู <b>รับเวชภัณฑ์</b> แล้วกด “ยืนยันรับเข้าคลัง”</li><li>เจ้าหน้าที่สร้างใบขอเบิกที่เมนู <b>เบิกจ่ายเวชภัณฑ์</b> → อนุมัติ → จ่ายจริง</li><li>ตรวจสอบยอดคงเหลือ แจ้งเตือน และรายงาน</li></ol>`, 'dashboard')}</div></div>` : ''}
+  <div class="cards">
+    ${card('รายการเวชภัณฑ์ที่เปิดใช้งาน', fmtNum(c.activeItems), 'box', 't-blue', 'items', 'รายการ')}
+    ${card('รายการที่มีสต็อกพร้อมใช้', fmtNum(c.itemsWithStock), 'layers', 't-emerald', 'stock', 'รายการ')}
+    ${card('มูลค่าคงคลังโดยประมาณ', fmtMoney(c.stockValue), 'money', 't-navy', 'reports', 'บาท', d.valuationNote)}
+    ${card('ต่ำกว่าจุดสั่งซื้อ', fmtNum(c.belowReorder), 'alert', c.belowReorder ? 't-orange' : 't-emerald', 'stock', 'รายการ')}
+    ${card('ล็อตใกล้หมดอายุ', fmtNum(c.nearExpiryLots), 'clock', c.nearExpiryLots ? 't-warn' : 't-emerald', 'stock', 'ล็อต', `ภายใน ${S.config.expiryWarningDays || 90} วัน`)}
+    ${card('ล็อตหมดอายุที่ยังมีคงเหลือ', fmtNum(c.expiredLotsWithBalance), 'alert', c.expiredLotsWithBalance ? 't-red' : 't-emerald', 'stock', 'ล็อต')}
+    ${card('คำขอเบิกรออนุมัติ', fmtNum(c.pendingApproval), 'clipboard', c.pendingApproval ? 't-orange' : 't-blue', 'requisitions', 'ใบ')}
+    ${card('รายการรอจ่ายจริง', fmtNum(c.pendingIssue), 'truck', c.pendingIssue ? 't-orange' : 't-blue', 'requisitions', 'ใบ')}
+    ${card('รายการรอตรวจรับ', fmtNum(c.pendingReceipt), 'inbox', c.pendingReceipt ? 't-orange' : 't-blue', can('VIEW_RECEIPTS') ? 'receipts' : '', 'ใบ')}
+    ${card('รายการที่มีข้อคลาดเคลื่อน', fmtNum(c.discrepancies), 'shield', c.discrepancies ? 't-red' : 't-emerald', 'notifications', 'รายการ', 'ของชำรุด/ขาดส่งจากการรับในช่วงวันที่ + ผลต่างตรวจนับที่รออนุมัติ')}
+  </div>
+  ${c.stockValueEstimated || c.itemsWithoutCost ? `<div class="alert info">${ic('money')}<div>${esc(d.valuationNote)}${c.itemsWithoutCost ? ` · มี ${c.itemsWithoutCost} รายการที่มีสต็อกแต่ไม่มีราคาในทะเบียน` : ''}</div></div>` : ''}
+  <div class="charts">
+    <div class="panel"><div class="panel-h"><h3>มูลค่ารับเข้าและจ่ายออกรายเดือน<span class="desc">หน่วย: บาท · รับเข้าสุทธิ (หักกลับรายการ) เทียบจ่ายจริงสุทธิ</span></h3></div><div class="panel-b"><div class="chart-box"><canvas id="ch-monthly"></canvas></div></div></div>
+    <div class="panel"><div class="panel-h"><h3>มูลค่าการจ่ายแยกตามหมวดหมู่<span class="desc">หน่วย: บาท · ในช่วงวันที่ที่เลือก</span></h3></div><div class="panel-b"><div class="chart-box"><canvas id="ch-cat"></canvas></div></div></div>
+  </div>
+  <div class="panel"><div class="panel-h"><h3>แนวโน้มการใช้เวชภัณฑ์<span class="desc">หน่วย: จำนวนรายการจ่าย (บรรทัดล็อต) และจำนวนใบเบิกที่มีการจ่ายต่อเดือน</span></h3></div><div class="panel-b"><div class="chart-box" style="height:260px"><canvas id="ch-trend"></canvas></div></div></div>
+  <div class="lists">
+    <div class="panel"><div class="panel-h"><h3>เวชภัณฑ์ที่มีการเบิกใช้สูง<span class="desc">จำนวนจ่ายสุทธิในช่วงวันที่ (หน่วยพื้นฐาน)</span></h3></div><div class="panel-b flush" id="db-top"></div></div>
+    <div class="panel"><div class="panel-h"><h3>ล็อตใกล้หมดอายุ</h3></div><div class="panel-b flush" id="db-near"></div></div>
+    <div class="panel"><div class="panel-h"><h3>รายการต่ำกว่าจุดสั่งซื้อ</h3></div><div class="panel-b flush" id="db-low"></div></div>
+    <div class="panel"><div class="panel-h"><h3>รายการรออนุมัติ</h3></div><div class="panel-b flush" id="db-pend"></div></div>
+    <div class="panel"><div class="panel-h"><h3>รายการรอตรวจรับ</h3></div><div class="panel-b flush" id="db-rc"></div></div>
+    <div class="panel"><div class="panel-h"><h3>ธุรกรรมล่าสุด</h3></div><div class="panel-b flush" id="db-recent"></div></div>
+  </div>`;
+  $('#db-go').onclick = () => { const f = $('#db-from').value, t = $('#db-to').value; if (!f || !t || f > t) { toast('ช่วงวันที่ไม่ถูกต้อง', 'warn'); return; } navigate('dashboard', { from: f, to: t }); };
+  $$('[data-go]', el).forEach(x => x.onclick = () => { const p = x.dataset.go; const n = NAV.find(z => z.id === p); if (n && (!n.perms.length || can(...n.perms))) navigate(p); });
+
+  renderTable($('#db-top'), { rows: d.topItems, showCount: false, emptyTitle: 'ยังไม่มีการจ่ายในช่วงนี้', columns: [{ label: 'เวชภัณฑ์', render: r => `<b>${esc(r.ItemCode)}</b> ${esc(r.ItemName)}` }, { label: 'จำนวน', num: true, render: r => fmtNum(r.qty) + ' ' + esc(r.Unit) }, { label: 'มูลค่า', num: true, render: r => fmtMoney(r.value) }] });
+  renderTable($('#db-near'), { rows: d.nearExpiry, showCount: false, emptyTitle: 'ไม่มีล็อตใกล้หมดอายุ', columns: [{ label: 'เวชภัณฑ์', render: r => `<b>${esc(r.ItemCode)}</b> ${esc(r.ItemName)}<div class="muted">ล็อต ${esc(r.LotNo)}</div>` }, { label: 'หมดอายุ', render: r => fmtDate(r.ExpiryDate) + `<div class="muted">อีก ${r.DaysToExpiry} วัน</div>` }, { label: 'คงเหลือ', num: true, render: r => fmtNum(r.OnHand) + ' ' + esc(r.BaseUnit) }] });
+  renderTable($('#db-low'), { rows: d.belowReorder, showCount: false, emptyTitle: 'ไม่มีรายการต่ำกว่าจุดสั่งซื้อ', columns: [{ label: 'เวชภัณฑ์', render: r => `<b>${esc(r.ItemCode)}</b> ${esc(r.ItemName)}` }, { label: 'พร้อมจ่าย', num: true, render: r => `<span style="color:var(--danger);font-weight:600">${fmtNum(r.Available)}</span> ${esc(r.Unit)}` }, { label: 'จุดสั่งซื้อ', num: true, render: r => fmtNum(r.ReorderPoint) }] });
+  renderTable($('#db-pend'), { rows: d.pendingApprovals, showCount: false, emptyTitle: 'ไม่มีรายการรออนุมัติ', onRow: r => r.type === 'ใบเบิก' ? openRequisition(r.id) : r.type === 'ผลตรวจนับ' ? openCount(r.id) : navigate('stock', { tab: 'adjust' }), columns: [{ label: 'ประเภท', key: 'type' }, { label: 'เลขที่', render: r => `<b>${esc(r.no)}</b><div class="muted">${esc(r.by)}${r.dept ? ' · ' + esc(r.dept) : ''}</div>` }, { label: 'วันที่', render: r => fmtDate(r.date) }] });
+  renderTable($('#db-rc'), { rows: d.pendingReceipts, showCount: false, emptyTitle: 'ไม่มีใบรับรอยืนยัน', onRow: r => can('VIEW_RECEIPTS') && openReceipt(r.id), columns: [{ label: 'เลขที่', render: r => `<b>${esc(r.no)}</b>` }, { label: 'วันที่รับ', render: r => fmtDate(r.date) }, { label: 'สถานะ', render: r => badge(r.status) }] });
+  renderTable($('#db-recent'), { rows: d.recentTransactions, showCount: false, emptyTitle: 'ยังไม่มีธุรกรรม', columns: [{ label: 'วันที่', render: r => fmtDate(r.date) }, { label: 'ประเภท', render: r => esc(TXN_TH[r.type] || r.type) }, { label: 'เวชภัณฑ์', render: r => esc(r.item) + `<div class="muted">${esc(r.ref)}</div>` }, { label: 'จำนวน', num: true, render: r => (r.qtyIn ? '+' + fmtNum(r.qtyIn) : '−' + fmtNum(r.qtyOut)) + ' ' + esc(r.unit || '') }] });
+
+  if (typeof Chart === 'undefined') { $$('.chart-box', el).forEach(b => b.innerHTML = emptyHtml('โหลดไลบรารีกราฟไม่สำเร็จ', 'ตรวจสอบการเชื่อมต่ออินเทอร์เน็ต (Chart.js จาก cdnjs)')); return; }
+  Chart.defaults.font.family = 'Sarabun'; Chart.defaults.color = '#5E6E82';
+  const months = d.charts.monthly;
+  const anyMonthly = months.some(m => m.inValue || m.outValue);
+  if (!anyMonthly) $('#ch-monthly').parentNode.innerHTML = emptyHtml('ยังไม่มีการรับ/จ่ายในช่วงวันที่นี้', 'เลือกช่วงวันที่ใหม่ หรือเริ่มบันทึกรับเวชภัณฑ์');
+  else S.charts.push(new Chart($('#ch-monthly'), { type: 'bar', data: { labels: months.map(m => fmtMonth(m.month)), datasets: [{ label: 'รับเข้า (บาท)', data: months.map(m => m.inValue), backgroundColor: CHART_COLORS.emerald, borderRadius: 6 }, { label: 'จ่ายออก (บาท)', data: months.map(m => m.outValue), backgroundColor: CHART_COLORS.blue, borderRadius: 6 }] }, options: { maintainAspectRatio: false, plugins: { tooltip: { callbacks: { label: x => x.dataset.label + ': ' + fmtMoney(x.raw) } } }, scales: { y: { beginAtZero: true, title: { display: true, text: 'บาท' }, ticks: { callback: v => fmtNum(v, 0) } } } } }));
+  const cats = d.charts.issueByCategory.filter(x => x.value > 0);
+  if (!cats.length) $('#ch-cat').parentNode.innerHTML = emptyHtml('ยังไม่มีมูลค่าการจ่าย', 'ต้องมีการจ่ายจริงและมีราคาต่อหน่วย');
+  else S.charts.push(new Chart($('#ch-cat'), { type: 'doughnut', data: { labels: cats.map(x => x.category), datasets: [{ data: cats.map(x => x.value), backgroundColor: CHART_COLORS.palette, borderWidth: 2, borderColor: '#fff' }] }, options: { maintainAspectRatio: false, cutout: '62%', plugins: { legend: { position: 'bottom', labels: { boxWidth: 12 } }, tooltip: { callbacks: { label: x => x.label + ': ' + fmtMoney(x.raw) + ' บาท' } } } } }));
+  if (!months.some(m => m.outLines)) $('#ch-trend').parentNode.innerHTML = emptyHtml('ยังไม่มีการจ่ายในช่วงวันที่นี้', '');
+  else S.charts.push(new Chart($('#ch-trend'), { type: 'line', data: { labels: months.map(m => fmtMonth(m.month)), datasets: [{ label: 'รายการจ่าย (บรรทัด)', data: months.map(m => m.outLines), borderColor: CHART_COLORS.orange, backgroundColor: 'rgba(255,159,67,.15)', fill: true, tension: .3 }, { label: 'ใบเบิกที่จ่าย (ใบ)', data: months.map(m => m.requisitions), borderColor: CHART_COLORS.navy, tension: .3 }] }, options: { maintainAspectRatio: false, scales: { y: { beginAtZero: true, ticks: { precision: 0 }, title: { display: true, text: 'จำนวน' } } } } }));
+};
+</script>
+
+<script>
+/* ============================ Items / Categories / Suppliers ============================ */
+PAGES.items = async (el, params) => {
+  await loadMaster(true);
+  const tab = params.tab || 'items';
+  el.innerHTML = `<div class="tabs"><button class="tab ${tab === 'items' ? 'active' : ''}" data-t="items">ทะเบียนเวชภัณฑ์</button><button class="tab ${tab === 'cats' ? 'active' : ''}" data-t="cats">หมวดหมู่</button>${can('VIEW_RECEIPTS', 'EDIT_ITEMS') ? `<button class="tab ${tab === 'sup' ? 'active' : ''}" data-t="sup">แหล่งรับเวชภัณฑ์</button>` : ''}</div><div id="it-body"></div>`;
+  $$('.tab', el).forEach(b => b.onclick = () => navigate('items', { tab: b.dataset.t }));
+  const body = $('#it-body');
+  if (tab === 'cats') return renderCategories(body);
+  if (tab === 'sup') return renderSuppliers(body);
+  body.innerHTML = `<div class="panel"><div class="panel-h"><h3>ทะเบียนเวชภัณฑ์มิใช่ยา<span class="desc">จำนวนทั้งหมดในระบบเก็บเป็น “หน่วยพื้นฐาน” ของแต่ละรายการ</span></h3>${can('EDIT_ITEMS') ? `<button class="btn primary" id="it-add">${ic('plus')}เพิ่มรายการ</button>` : ''}</div>
+    <div class="panel-b"><div class="toolbar">
+      <div class="field grow"><label>ค้นหารหัส/ชื่อ</label><input class="input" id="it-q" placeholder="พิมพ์เพื่อค้นหา…"></div>
+      <div class="field"><label>หมวดหมู่</label><select class="input" id="it-cat">${optionList(S.categories, 'CategoryID', c => c.CategoryName, '', 'ทุกหมวดหมู่')}</select></div>
+      <div class="field"><label>สถานะ</label><select class="input" id="it-st"><option value="active">เปิดใช้งาน</option><option value="inactive">ปิดใช้งาน</option><option value="">ทั้งหมด</option></select></div>
+    </div></div><div id="it-table"></div></div>`;
+  const draw = () => {
+    const q = $('#it-q').value.trim().toLowerCase(), cat = $('#it-cat').value, st = $('#it-st').value;
+    const rows = S.items.filter(i => (!q || (i.ItemCode + ' ' + i.ItemName).toLowerCase().includes(q)) && (!cat || i.CategoryID === cat) && (!st || (st === 'active' ? i.IsActive : !i.IsActive)));
+    renderTable($('#it-table'), {
+      rows, emptyTitle: S.items.length ? 'ไม่พบรายการตามเงื่อนไข' : 'ยังไม่มีทะเบียนเวชภัณฑ์', emptyText: S.items.length ? '' : 'กด “เพิ่มรายการ” หรือนำเข้าจาก Excel ที่เมนูตั้งค่าระบบ',
+      onRow: can('EDIT_ITEMS') ? r => itemForm(r) : null,
+      columns: [
+        { label: 'รหัส', render: r => `<b>${esc(r.ItemCode)}</b>` },
+        { label: 'ชื่อเวชภัณฑ์', render: r => esc(r.ItemName) + (r.Description ? `<div class="muted">${esc(r.Description)}</div>` : '') },
+        { label: 'หมวดหมู่', key: 'CategoryName' },
+        { label: 'หน่วย', render: r => esc(r.BaseUnit) + (r.PurchaseUnit ? `<div class="muted">1 ${esc(r.PurchaseUnit)} = ${fmtNum(r.ConversionFactor)} ${esc(r.BaseUnit)}</div>` : '') },
+        { label: 'จุดสั่งซื้อ', num: true, render: r => fmtNum(r.ReorderPoint) },
+        { label: 'คงเหลือ / พร้อมจ่าย', num: true, render: r => r.Stock ? `${fmtNum(r.Stock.OnHand)} / <b style="color:${r.ReorderPoint && r.Stock.Available <= r.ReorderPoint ? 'var(--danger)' : 'inherit'}">${fmtNum(r.Stock.Available)}</b>` : '-' },
+        { label: 'ราคา/หน่วย', num: true, render: r => r.UnitCost ? fmtMoney(r.UnitCost) : '<span class="muted">ไม่ระบุ</span>' },
+        { label: 'สถานะ', render: r => r.IsActive ? badge('ACTIVE') : '<span class="badge b-gray">ปิดใช้งาน</span>' }
+      ]
+    });
+  };
+  $('#it-q').oninput = debounce(draw); $('#it-cat').onchange = draw; $('#it-st').onchange = draw;
+  if ($('#it-add')) $('#it-add').onclick = () => itemForm(null);
+  draw();
+};
+
+function itemForm(it) {
+  const x = it || { IsActive: true, ConversionFactor: 1 };
+  const locs = S.config.locations || [];
+  const m = openModal({
+    title: it ? 'แก้ไขทะเบียน: ' + it.ItemCode : 'เพิ่มทะเบียนเวชภัณฑ์', size: 'lg',
+    body: `<form class="grid g3" id="it-form">
+      <div class="field"><label>รหัสเวชภัณฑ์ <span class="req">*</span></label><input class="input" name="ItemCode" maxlength="50" value="${esc(x.ItemCode)}"></div>
+      <div class="field span2"><label>ชื่อเวชภัณฑ์ <span class="req">*</span></label><input class="input" name="ItemName" maxlength="200" value="${esc(x.ItemName)}"></div>
+      <div class="field"><label>หมวดหมู่ <span class="req">*</span></label><select class="input" name="CategoryID">${optionList(S.categories.filter(c => c.IsActive || c.CategoryID === x.CategoryID), 'CategoryID', c => c.CategoryName, x.CategoryID, '— เลือก —')}</select></div>
+      <div class="field span2"><label>รายละเอียด/ขนาด</label><input class="input" name="Description" maxlength="1000" value="${esc(x.Description)}"></div>
+      <div class="field"><label>หน่วยพื้นฐาน (หน่วยเล็กสุด) <span class="req">*</span></label><input class="input" name="BaseUnit" maxlength="30" value="${esc(x.BaseUnit)}" placeholder="เช่น ชิ้น, คู่, ม้วน"><span class="hint">ยอดคงเหลือ/การจ่ายทั้งหมดใช้หน่วยนี้</span></div>
+      <div class="field"><label>หน่วยจัดซื้อ/รับ</label><input class="input" name="PurchaseUnit" maxlength="30" value="${esc(x.PurchaseUnit)}" placeholder="เช่น กล่อง (ว่างได้)"></div>
+      <div class="field"><label>อัตราแปลง (หน่วยพื้นฐานต่อ 1 หน่วยจัดซื้อ)</label><input class="input" name="ConversionFactor" type="number" min="1" step="any" value="${esc(x.ConversionFactor)}"><span class="hint" id="it-conv"></span></div>
+      <div class="field"><label>หน่วยจ่าย</label><select class="input" name="IssueUnit"></select></div>
+      <div class="field"><label>จุดสั่งซื้อ (หน่วยพื้นฐาน)</label><input class="input" name="ReorderPoint" type="number" min="0" step="any" value="${esc(x.ReorderPoint || 0)}"></div>
+      <div class="field"><label>ยอดสูงสุด (หน่วยพื้นฐาน)</label><input class="input" name="MaximumStock" type="number" min="0" step="any" value="${esc(x.MaximumStock || 0)}"></div>
+      <div class="field"><label>ตำแหน่งจัดเก็บเริ่มต้น</label><input class="input" name="DefaultStorageLocation" list="loc-list" maxlength="100" value="${esc(x.DefaultStorageLocation)}"><datalist id="loc-list">${locs.map(l => `<option value="${esc(l)}">`).join('')}</datalist></div>
+      <div class="field"><label>ราคาต่อหน่วยพื้นฐาน (บาท)</label><input class="input" name="UnitCost" type="number" min="0" step="any" value="${esc(x.UnitCost || 0)}"><span class="hint">ใช้เป็นราคาประมาณการเมื่อล็อตไม่มีราคา</span></div>
+      <div class="field" style="justify-content:flex-end"><label class="check"><input type="checkbox" name="IsActive" ${x.IsActive ? 'checked' : ''}> เปิดใช้งาน</label></div>
+    </form>${it && it.Stock && it.Stock.OnHand ? `<div class="alert info">${ic('layers')}<div>รายการนี้มียอดคงเหลือ ${fmtNum(it.Stock.OnHand)} ${esc(it.BaseUnit)} — ไม่สามารถเปลี่ยนหน่วยพื้นฐานได้หากมีประวัติธุรกรรม</div></div>` : ''}`,
+    buttons: [
+      ...(it ? [{ label: 'ลบ (เฉพาะรายการที่ไม่มีประวัติ)', cls: 'danger', icon: 'trash', onClick: async (btn, mm) => {
+        if (!await confirmBox('ลบรายการ', `ลบ <b>${esc(it.ItemCode)}</b>? ระบบจะอนุญาตเฉพาะรายการที่ไม่เคยมีธุรกรรม หากมีประวัติให้ใช้ “ปิดใช้งาน” แทน`, { danger: true, okLabel: 'ลบ' })) return;
+        withBtn(btn, async () => { await api('deleteItem', { ItemID: it.ItemID }, { mutate: true }); mm.close(); navigate('items'); });
+      } }] : []),
+      { label: 'ยกเลิก', onClick: (b, mm) => mm.close() },
+      { label: 'บันทึก', cls: 'primary', onClick: (btn, mm) => {
+        if (!requireFields(mm.el, ['ItemCode', 'ItemName', 'CategoryID', 'BaseUnit'])) return;
+        const f = formData(mm.el);
+        if (f.PurchaseUnit && f.PurchaseUnit !== f.BaseUnit && !(Number(f.ConversionFactor) > 1)) { toast('ระบุอัตราแปลงหน่วยให้มากกว่า 1', 'warn'); return; }
+        if (Number(f.MaximumStock) > 0 && Number(f.ReorderPoint) > Number(f.MaximumStock)) { toast('จุดสั่งซื้อต้องไม่เกินยอดสูงสุด', 'warn'); return; }
+        withBtn(btn, async () => { await api('saveItem', { ...f, ItemID: it ? it.ItemID : '' }, { mutate: true }); mm.close(); navigate('items'); });
+      } }
+    ]
+  });
+  const syncUnits = () => {
+    const f = formData(m.el), sel = $('[name=IssueUnit]', m.el), cur = sel.value || x.IssueUnit;
+    const us = [f.BaseUnit, f.PurchaseUnit].filter((u, i, a) => u && a.indexOf(u) === i);
+    sel.innerHTML = us.map(u => `<option ${u === cur ? 'selected' : ''}>${esc(u)}</option>`).join('');
+    $('#it-conv', m.el).textContent = f.PurchaseUnit && f.BaseUnit && f.PurchaseUnit !== f.BaseUnit ? `1 ${f.PurchaseUnit} = ${f.ConversionFactor || '?'} ${f.BaseUnit}` : '';
+  };
+  ['BaseUnit', 'PurchaseUnit', 'ConversionFactor'].forEach(n => $(`[name=${n}]`, m.el).addEventListener('input', syncUnits));
+  syncUnits();
+}
+
+function renderCategories(body) {
+  body.innerHTML = `<div class="panel"><div class="panel-h"><h3>หมวดหมู่เวชภัณฑ์<span class="desc">หมวดที่มีป้าย “ตั้งต้น” สร้างโดย SetupSheet และแก้ไขได้</span></h3>${can('EDIT_ITEMS') ? `<button class="btn primary" id="cat-add">${ic('plus')}เพิ่มหมวดหมู่</button>` : ''}</div><div id="cat-table"></div></div>`;
+  const form = (c) => {
+    const x = c || { IsActive: true };
+    openModal({ title: c ? 'แก้ไขหมวดหมู่' : 'เพิ่มหมวดหมู่', body: `<div class="grid g2"><div class="field"><label>รหัสหมวด <span class="req">*</span></label><input class="input" name="CategoryCode" maxlength="30" value="${esc(x.CategoryCode)}"></div><div class="field"><label>ชื่อหมวด <span class="req">*</span></label><input class="input" name="CategoryName" maxlength="150" value="${esc(x.CategoryName)}"></div><div class="field spanall"><label>คำอธิบาย</label><input class="input" name="Description" maxlength="500" value="${esc(x.Description)}"></div><label class="check"><input type="checkbox" name="IsActive" ${x.IsActive ? 'checked' : ''}> เปิดใช้งาน</label></div>`,
+      buttons: [{ label: 'ยกเลิก', onClick: (b, m) => m.close() }, { label: 'บันทึก', cls: 'primary', onClick: (btn, m) => { if (!requireFields(m.el, ['CategoryCode', 'CategoryName'])) return; withBtn(btn, async () => { await api('saveCategory', { ...formData(m.el), CategoryID: c ? c.CategoryID : '' }, { mutate: true }); m.close(); S.categories = null; navigate('items', { tab: 'cats' }); }); } }] });
+  };
+  if ($('#cat-add')) $('#cat-add').onclick = () => form(null);
+  renderTable($('#cat-table'), { rows: S.categories, emptyTitle: 'ยังไม่มีหมวดหมู่', onRow: can('EDIT_ITEMS') ? form : null, columns: [{ label: 'รหัส', render: r => `<b>${esc(r.CategoryCode)}</b>` }, { label: 'ชื่อหมวดหมู่', render: r => esc(r.CategoryName) + (r.IsSeed ? ' <span class="badge b-navy">ตั้งต้น</span>' : '') }, { label: 'คำอธิบาย', key: 'Description' }, { label: 'จำนวนรายการ', num: true, render: r => fmtNum(r.ItemCount) }, { label: 'สถานะ', render: r => r.IsActive ? badge('ACTIVE') : '<span class="badge b-gray">ปิดใช้งาน</span>' }] });
+}
+
+function renderSuppliers(body) {
+  body.innerHTML = `<div class="panel"><div class="panel-h"><h3>แหล่งรับเวชภัณฑ์<span class="desc">แหล่งรับหลัก: โรงพยาบาลขอนแก่น</span></h3>${can('EDIT_ITEMS') ? `<button class="btn primary" id="sup-add">${ic('plus')}เพิ่มแหล่งรับ</button>` : ''}</div><div id="sup-table"></div></div>`;
+  const form = (s) => {
+    const x = s || { IsActive: true };
+    openModal({ title: s ? 'แก้ไขแหล่งรับ' : 'เพิ่มแหล่งรับ', body: `<div class="grid g2"><div class="field"><label>รหัส <span class="req">*</span></label><input class="input" name="SupplierCode" maxlength="30" value="${esc(x.SupplierCode)}"></div><div class="field"><label>ชื่อแหล่งรับ <span class="req">*</span></label><input class="input" name="SupplierName" maxlength="200" value="${esc(x.SupplierName)}"></div><div class="field"><label>ผู้ติดต่อ</label><input class="input" name="ContactName" value="${esc(x.ContactName)}"></div><div class="field"><label>โทรศัพท์</label><input class="input" name="Phone" value="${esc(x.Phone)}"></div><div class="field spanall"><label>ที่อยู่</label><input class="input" name="Address" value="${esc(x.Address)}"></div><label class="check"><input type="checkbox" name="IsDefault" ${x.IsDefault ? 'checked' : ''}> ค่าเริ่มต้นในใบรับ</label><label class="check"><input type="checkbox" name="IsActive" ${x.IsActive ? 'checked' : ''}> เปิดใช้งาน</label></div>`,
+      buttons: [{ label: 'ยกเลิก', onClick: (b, m) => m.close() }, { label: 'บันทึก', cls: 'primary', onClick: (btn, m) => { if (!requireFields(m.el, ['SupplierCode', 'SupplierName'])) return; withBtn(btn, async () => { await api('saveSupplier', { ...formData(m.el), SupplierID: s ? s.SupplierID : '' }, { mutate: true }); m.close(); S.suppliers = null; navigate('items', { tab: 'sup' }); }); } }] });
+  };
+  if ($('#sup-add')) $('#sup-add').onclick = () => form(null);
+  renderTable($('#sup-table'), { rows: S.suppliers || [], onRow: can('EDIT_ITEMS') ? form : null, columns: [{ label: 'รหัส', render: r => `<b>${esc(r.SupplierCode)}</b>` }, { label: 'ชื่อ', render: r => esc(r.SupplierName) + (r.IsDefault ? ' <span class="badge b-green">ค่าเริ่มต้น</span>' : '') }, { label: 'ผู้ติดต่อ', key: 'ContactName' }, { label: 'โทร', key: 'Phone' }, { label: 'สถานะ', render: r => r.IsActive ? badge('ACTIVE') : '<span class="badge b-gray">ปิดใช้งาน</span>' }] });
+}
+
+/* ============================ Receipts ============================ */
+PAGES.receipts = async (el, params) => {
+  await loadMaster();
+  el.innerHTML = `<div class="panel"><div class="panel-h"><h3>รับเวชภัณฑ์จากโรงพยาบาลขอนแก่น<span class="desc">ใบรับสถานะ “ร่าง” ยังไม่เพิ่มยอดคลัง — ยอดเพิ่มเมื่อกด “ยืนยันรับเข้าคลัง” เท่านั้น</span></h3>${can('CREATE_RECEIPT') ? `<button class="btn primary" id="rc-new">${ic('plus')}สร้างใบรับ</button>` : ''}</div>
+  <div class="panel-b"><div class="toolbar">
+    <div class="field grow"><label>ค้นหาเลขที่ใบรับ/เลขอ้างอิง</label><input class="input" id="rc-q"></div>
+    <div class="field"><label>สถานะ</label><select class="input" id="rc-st"><option value="">ทั้งหมด</option>${['Draft', 'Posting', 'Confirmed', 'Reversed', 'Cancelled'].map(s => `<option value="${s}" ${params.status === s ? 'selected' : ''}>${STATUS_TH[s][0]}</option>`).join('')}</select></div>
+    <div class="field"><label>รับตั้งแต่</label><input class="input" type="date" id="rc-from"></div>
+    <div class="field"><label>ถึง</label><input class="input" type="date" id="rc-to"></div>
+    <button class="btn blue" id="rc-go">${ic('search')}ค้นหา</button>
+  </div></div><div id="rc-table">${loadingHtml()}</div></div>`;
+  const load = async () => {
+    $('#rc-table').innerHTML = loadingHtml();
+    try {
+      const rows = await api('getReceipts', { search: $('#rc-q').value, status: $('#rc-st').value, dateFrom: $('#rc-from').value, dateTo: $('#rc-to').value });
+      renderTable($('#rc-table'), { rows, emptyTitle: 'ยังไม่มีใบรับ', emptyText: can('CREATE_RECEIPT') ? 'กด “สร้างใบรับ” เพื่อบันทึกการรับเวชภัณฑ์จากโรงพยาบาลขอนแก่น' : '', onRow: r => openReceipt(r.ReceiptID),
+        columns: [{ label: 'เลขที่ใบรับ', render: r => `<b>${esc(r.ReceiptNo)}</b><div class="muted">${esc(r.RequestReference || '')}</div>` }, { label: 'วันที่รับ', render: r => fmtDate(r.ReceivedDate) }, { label: 'แหล่งรับ', key: 'SourceName' }, { label: 'รายการ', num: true, render: r => fmtNum(r.LineCount) }, { label: 'มูลค่ารับเข้า', num: true, render: r => fmtMoney(r.TotalValue) }, { label: 'ข้อคลาดเคลื่อน', render: r => r.HasDiscrepancy ? '<span class="badge b-orange">ชำรุด/ขาด</span>' : '' }, { label: 'สถานะ', render: r => badge(r.Status) }] });
+    } catch (e) { if (!e.handled) $('#rc-table').innerHTML = errorHtml(e.message); }
+  };
+  $('#rc-go').onclick = load; $('#rc-q').onkeydown = e => { if (e.key === 'Enter') load(); };
+  if ($('#rc-new')) $('#rc-new').onclick = () => receiptForm(null);
+  load();
+};
+
+function receiptForm(rc, prefillLines) {
+  const x = rc || {};
+  const def = (S.suppliers || []).find(s => s.IsDefault) || (S.suppliers || [])[0] || {};
+  const locs = S.config.locations || [];
+  let lines = (prefillLines || (rc && rc.lines) || []).map(l => ({
+    ItemID: l.ItemID, InputUnit: l.InputUnit, f: Number(l.UnitFactor) || 1,
+    RequestedQty: l.RequestedQty / (Number(l.UnitFactor) || 1), ReceivedQty: l.ReceivedQty / (Number(l.UnitFactor) || 1), DamagedQty: l.DamagedQty / (Number(l.UnitFactor) || 1),
+    UnitCost: l.UnitCost * (Number(l.UnitFactor) || 1), LotNo: l.LotNo, ExpiryDate: l.ExpiryDate, StorageLocation: l.StorageLocation, Note: l.Note
+  }));
+  if (!lines.length) lines.push({});
+  const m = openModal({
+    title: rc && rc.ReceiptID ? 'แก้ไขร่างใบรับ ' + rc.ReceiptNo : 'สร้างใบรับเวชภัณฑ์', size: 'xl', dismissable: false,
+    body: `<div class="grid g4" id="rc-h">
+      <div class="field span2"><label>แหล่งรับ <span class="req">*</span></label><select class="input" name="SourceID">${optionList((S.suppliers || []).filter(s => s.IsActive), 'SupplierID', s => s.SupplierName, x.SourceID || def.SupplierID)}</select></div>
+      <div class="field span2"><label>เลขที่ใบเบิก/เอกสารอ้างอิงจาก รพ.ขอนแก่น</label><input class="input" name="RequestReference" maxlength="100" value="${esc(x.RequestReference)}"></div>
+      <div class="field"><label>วันที่เอกสาร <span class="req">*</span></label><input class="input" type="date" name="DocumentDate" value="${esc(x.DocumentDate || todayIso())}"></div>
+      <div class="field"><label>วันที่รับของ <span class="req">*</span></label><input class="input" type="date" name="ReceivedDate" max="${todayIso()}" value="${esc(x.ReceivedDate || todayIso())}"></div>
+      <div class="field"><label>ผู้ส่งของ</label><input class="input" name="DeliveredBy" maxlength="100" value="${esc(x.DeliveredBy)}"></div>
+      <div class="field"><label>ผู้รับของ</label><input class="input" name="ReceivedBy" maxlength="100" value="${esc(x.ReceivedBy || S.user.FullName)}"></div>
+      <div class="field"><label>ผู้ตรวจรับ</label><input class="input" name="CheckedBy" maxlength="100" value="${esc(x.CheckedBy)}"></div>
+      <div class="field span3"><label>หมายเหตุ</label><input class="input" name="Note" maxlength="1000" value="${esc(x.Note)}"></div>
+    </div>
+    <div class="section-title">${ic('box')}รายการที่รับ <span class="badge b-gray" id="rc-count"></span></div>
+    <div class="alert info">${ic('alert')}<div>กรอกจำนวนตาม “หน่วยที่รับจริง” ระบบแปลงเป็นหน่วยพื้นฐานให้อัตโนมัติ · <b>รับเข้าคลัง = ได้รับ − ชำรุด</b> · ของชำรุดและล็อตหมดอายุจะไม่ถูกนำเข้ายอดพร้อมใช้</div></div>
+    <div id="rc-lines"></div>${itemDatalist('rc-items', true)}<datalist id="rc-locs">${locs.map(l => `<option value="${esc(l)}">`).join('')}</datalist>
+    <button class="btn" id="rc-addline" type="button">${ic('plus')}เพิ่มรายการ</button>`,
+    buttons: [{ label: 'ยกเลิก', onClick: async (b, mm) => { if (await confirmBox('ปิดแบบฟอร์ม', 'ข้อมูลที่ยังไม่บันทึกจะหายไป ต้องการปิดหรือไม่?')) mm.close(); } },
+      { label: 'บันทึกร่างใบรับ', cls: 'primary', onClick: (btn, mm) => save(btn, mm) }]
+  });
+  const box = $('#rc-lines', m.el);
+  const read = () => { $$('.line-item', box).forEach((d, i) => { const g = n => $(`[data-f=${n}]`, d).value.trim(); const it = findItemByLabel(g('item')); Object.assign(lines[i], { ItemID: it ? it.ItemID : '', _label: g('item'), InputUnit: g('unit'), RequestedQty: g('req'), ReceivedQty: g('rec'), DamagedQty: g('dmg'), UnitCost: g('cost'), LotNo: g('lot'), ExpiryDate: g('exp'), StorageLocation: g('loc'), Note: g('note') }); }); };
+  const calc = (d, i) => {
+    const l = lines[i], it = itemById(l.ItemID), f = factorOf(it, l.InputUnit);
+    const rec = Number(l.ReceivedQty) || 0, dmg = Number(l.DamagedQty) || 0, req = Number(l.RequestedQty) || 0;
+    const acc = Math.max(rec - dmg, 0);
+    let t = it ? `รับเข้าคลัง ${fmtNum(acc * f)} ${it.BaseUnit}` + (f > 1 ? ` (${fmtNum(acc)} ${l.InputUnit} × ${fmtNum(f)})` : '') + (req > rec ? ` · ขาดส่ง ${fmtNum((req - rec) * f)} ${it.BaseUnit}` : '') + (dmg ? ` · ชำรุด ${fmtNum(dmg * f)} ${it.BaseUnit}` : '') + (Number(l.UnitCost) ? ` · มูลค่า ${fmtMoney(acc * Number(l.UnitCost))} บาท` : '') : 'เลือกรายการเวชภัณฑ์จากรายการแนะนำ';
+    if (dmg > rec) t = '⚠ จำนวนชำรุดมากกว่าจำนวนที่ได้รับ';
+    if (l.ExpiryDate && l.ExpiryDate <= todayIso() && acc > 0) t = '⚠ ล็อตหมดอายุแล้ว — ให้บันทึกเป็นจำนวนชำรุด (ไม่รับเข้าคลัง)';
+    $('.conv', d).textContent = t;
+  };
+  const draw = () => {
+    box.innerHTML = lines.map((l, i) => { const it = itemById(l.ItemID); return `<div class="line-item" data-i="${i}"><div class="grid g4">
+      <div class="field span2"><label>${i + 1}. เวชภัณฑ์ <span class="req">*</span></label><input class="input sm" data-f="item" list="rc-items" value="${esc(it ? itemLabel(it) : (l._label || ''))}" placeholder="พิมพ์รหัสหรือชื่อ"></div>
+      <div class="field"><label>หน่วยที่รับ</label><select class="input sm" data-f="unit">${unitOptions(it, l.InputUnit || (it && (it.PurchaseUnit || it.BaseUnit)))}</select></div>
+      <div class="field"><label>ราคา/หน่วยที่รับ (บาท)</label><input class="input sm" data-f="cost" type="number" min="0" step="any" value="${esc(l.UnitCost ?? (it ? it.UnitCost * factorOf(it, l.InputUnit || it.PurchaseUnit) : ''))}"></div>
+      <div class="field"><label>จำนวนที่ขอ</label><input class="input sm" data-f="req" type="number" min="0" step="any" value="${esc(l.RequestedQty ?? '')}"></div>
+      <div class="field"><label>จำนวนที่ได้รับจริง <span class="req">*</span></label><input class="input sm" data-f="rec" type="number" min="0" step="any" value="${esc(l.ReceivedQty ?? '')}"></div>
+      <div class="field"><label>ชำรุด (รวมอยู่ในที่ได้รับ)</label><input class="input sm" data-f="dmg" type="number" min="0" step="any" value="${esc(l.DamagedQty ?? 0)}"></div>
+      <div class="field"><label>เลขล็อต <span class="req">*</span></label><input class="input sm" data-f="lot" maxlength="60" value="${esc(l.LotNo || '')}" placeholder="ไม่มีล็อตให้ใส่ NO-LOT"></div>
+      <div class="field"><label>วันหมดอายุ</label><input class="input sm" data-f="exp" type="date" value="${esc(l.ExpiryDate || '')}"></div>
+      <div class="field"><label>ที่จัดเก็บ</label><input class="input sm" data-f="loc" list="rc-locs" value="${esc(l.StorageLocation || (it && it.DefaultStorageLocation) || '')}"></div>
+      <div class="field span2"><label>หมายเหตุ</label><input class="input sm" data-f="note" maxlength="500" value="${esc(l.Note || '')}"></div>
+      </div><div style="display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap"><span class="conv"></span><button class="btn sm danger" data-del="${i}" type="button">${ic('trash')}ลบรายการ</button></div></div>`; }).join('');
+    $('#rc-count', m.el).textContent = lines.length + ' รายการ';
+    $$('.line-item', box).forEach((d, i) => {
+      calc(d, i);
+      $('[data-f=item]', d).addEventListener('change', () => { read(); const it = itemById(lines[i].ItemID); if (it) { lines[i].InputUnit = it.PurchaseUnit || it.BaseUnit; lines[i].UnitCost = it.UnitCost ? it.UnitCost * factorOf(it, lines[i].InputUnit) : ''; lines[i].StorageLocation = lines[i].StorageLocation || it.DefaultStorageLocation; } draw(); });
+      $('[data-f=unit]', d).addEventListener('change', () => { const it = itemById(lines[i].ItemID); const old = factorOf(it, lines[i].InputUnit); read(); const nf = factorOf(it, lines[i].InputUnit); if (lines[i].UnitCost !== '') lines[i].UnitCost = Math.round(Number(lines[i].UnitCost) / old * nf * 10000) / 10000; draw(); });
+      $$('input', d).forEach(inp => inp.addEventListener('input', () => { read(); calc(d, i); }));
+    });
+    $$('[data-del]', box).forEach(b => b.onclick = () => { read(); if (lines.length === 1) { toast('ต้องมีอย่างน้อย 1 รายการ', 'warn'); return; } lines.splice(+b.dataset.del, 1); draw(); });
+  };
+  $('#rc-addline', m.el).onclick = () => { read(); lines.push({}); draw(); box.lastElementChild.scrollIntoView({ behavior: 'smooth', block: 'center' }); };
+  draw();
+  const save = (btn, mm) => {
+    read();
+    if (!requireFields($('#rc-h', mm.el), ['SourceID', 'DocumentDate', 'ReceivedDate'])) return;
+    const h = formData($('#rc-h', mm.el));
+    if (h.ReceivedDate > todayIso()) { toast('วันที่รับต้องไม่เป็นวันในอนาคต', 'warn'); return; }
+    if (h.ReceivedDate < h.DocumentDate) { toast('วันที่รับต้องไม่ก่อนวันที่เอกสาร', 'warn'); return; }
+    for (let i = 0; i < lines.length; i++) {
+      const l = lines[i], n = `รายการที่ ${i + 1}: `;
+      if (!l.ItemID) { toast(n + 'เลือกเวชภัณฑ์จากรายการแนะนำ', 'warn'); return; }
+      if (l.ReceivedQty === '' || Number(l.ReceivedQty) < 0) { toast(n + 'ระบุจำนวนที่ได้รับ', 'warn'); return; }
+      if (Number(l.DamagedQty) > Number(l.ReceivedQty)) { toast(n + 'ชำรุดมากกว่าที่ได้รับ', 'warn'); return; }
+      if (Number(l.ReceivedQty) - Number(l.DamagedQty || 0) > 0 && !l.LotNo) { toast(n + 'ระบุเลขล็อต', 'warn'); return; }
+      if (l.ExpiryDate && l.ExpiryDate <= todayIso() && Number(l.ReceivedQty) - Number(l.DamagedQty || 0) > 0) { toast(n + 'ล็อตหมดอายุแล้ว ให้บันทึกเป็นจำนวนชำรุด', 'warn'); return; }
+    }
+    const payload = { ...h, lines: lines.map(l => ({ ItemID: l.ItemID, InputUnit: l.InputUnit, RequestedQty: l.RequestedQty || 0, ReceivedQty: l.ReceivedQty, DamagedQty: l.DamagedQty || 0, UnitCost: l.UnitCost || 0, LotNo: l.LotNo, ExpiryDate: l.ExpiryDate, StorageLocation: l.StorageLocation, Note: l.Note })) };
+    withBtn(btn, async () => {
+      const r = rc && rc.ReceiptID ? await api('updateReceipt', { ...payload, ReceiptID: rc.ReceiptID }, { mutate: true }) : await api('createReceipt', payload, { mutate: true });
+      mm.close(); if (S.page === 'receipts') navigate('receipts'); openReceipt(r.ReceiptID);
+    });
+  };
+}
+
+async function openReceipt(id) {
+  const m = openModal({ title: 'ใบรับเวชภัณฑ์', size: 'xl', body: loadingHtml(), footer: false });
+  let r;
+  try { r = await api('getReceipt', { ReceiptID: id }); } catch (e) { m.body.innerHTML = errorHtml(e.message); return; }
+  m.close();
+  const acts = [];
+  if (r.Status === 'Draft' && can('CREATE_RECEIPT')) acts.push({ label: 'ยกเลิกใบรับ', cls: 'danger', onClick: async (btn, mm) => { const why = await confirmBox('ยกเลิกใบรับ', `ยกเลิกร่างใบรับ ${esc(r.ReceiptNo)}`, { reason: true, danger: true, okLabel: 'ยกเลิกใบรับ' }); if (!why) return; withBtn(btn, async () => { await api('cancelReceipt', { ReceiptID: r.ReceiptID, reason: why }, { mutate: true }); mm.close(); refreshPage('receipts'); }); } });
+  if (r.Status === 'Confirmed' && can('REVERSE')) acts.push({ label: 'กลับรายการ', cls: 'danger', icon: 'undo', onClick: async (btn, mm) => { const why = await confirmBox('กลับรายการใบรับ', `ระบบจะสร้างธุรกรรม REVERSAL เพื่อนำยอดของใบรับ <b>${esc(r.ReceiptNo)}</b> ออกจากคลัง (ต้องมียอดคงเหลือในล็อตพอ) ประวัติเดิมยังคงอยู่`, { reason: true, danger: true, okLabel: 'กลับรายการ' }); if (!why) return; withBtn(btn, async () => { await api('reverseReceipt', { ReceiptID: r.ReceiptID, reason: why }, { mutate: true }); mm.close(); refreshPage('receipts'); openReceipt(r.ReceiptID); }); } });
+  if ((r.Status === 'Reversed' || r.Status === 'Cancelled') && can('CREATE_RECEIPT')) acts.push({ label: 'คัดลอกเป็นใบรับใหม่', icon: 'plus', onClick: (b, mm) => { mm.close(); receiptForm({ SourceID: r.SourceID, RequestReference: r.RequestReference, DocumentDate: r.DocumentDate, ReceivedDate: r.ReceivedDate, DeliveredBy: r.DeliveredBy, ReceivedBy: r.ReceivedBy, CheckedBy: r.CheckedBy, Note: 'แก้ไขจาก ' + r.ReceiptNo }, r.lines); } });
+  if (can('CREATE_RECEIPT', 'CONFIRM_RECEIPT') && r.Status !== 'Cancelled') acts.push({ label: 'แนบเอกสาร', icon: 'paperclip', onClick: () => attachDoc('Receipt', r.ReceiptID, () => openReceipt(r.ReceiptID), mm0) });
+  acts.push({ label: 'พิมพ์', icon: 'printer', onClick: () => printReceipt(r) });
+  if (r.Status === 'Draft' && can('CREATE_RECEIPT')) acts.push({ label: 'แก้ไข', icon: 'edit', onClick: (b, mm) => { mm.close(); receiptForm(r); } });
+  if ((r.Status === 'Draft' || r.Status === 'Posting') && can('CONFIRM_RECEIPT')) acts.push({ label: r.Status === 'Posting' ? 'ยืนยันซ้ำ (กู้คืน)' : 'ยืนยันรับเข้าคลัง', cls: 'primary', icon: 'check', onClick: (btn, mm) => confirmReceiptFlow(r, mm) });
+  const tot = r.lines.reduce((s, l) => s + l.AcceptedQty * l.UnitCost, 0);
+  const mm0 = openModal({
+    title: `ใบรับ ${r.ReceiptNo}`, size: 'xl', buttons: acts.length ? acts : undefined,
+    body: `${r.Status === 'Posting' ? `<div class="alert err">${ic('alert')}<div>ใบรับนี้บันทึกไม่สมบูรณ์ (ค้างสถานะ Posting) — กด “ยืนยันซ้ำ” ระบบจะตรวจสอบธุรกรรมที่มีอยู่และไม่ลงยอดซ้ำ</div></div>` : ''}
+    ${r.Status === 'Draft' ? `<div class="alert warn">${ic('alert')}<div>ใบรับนี้ยังเป็นร่าง — ยังไม่เพิ่มยอดคลัง</div></div>` : ''}
+    <div class="kv"><div><small>สถานะ</small><b>${badge(r.Status)}</b></div><div><small>แหล่งรับ</small><b>${esc(r.SourceName)}</b></div><div><small>เอกสารอ้างอิง</small><b>${esc(r.RequestReference || '-')}</b></div><div><small>วันที่เอกสาร / วันที่รับ</small><b>${fmtDate(r.DocumentDate)} / ${fmtDate(r.ReceivedDate)}</b></div>
+    <div><small>ผู้ส่ง / ผู้รับ / ผู้ตรวจรับ</small><b>${esc(r.DeliveredBy || '-')} / ${esc(r.ReceivedBy || '-')} / ${esc(r.CheckedBy || '-')}</b></div><div><small>สร้างโดย</small><b>${esc(r.CreatedByName)} · ${fmtDateTime(r.CreatedAt)}</b></div>
+    ${r.ConfirmedAt ? `<div><small>ยืนยันโดย</small><b>${esc(r.ConfirmedByName)} · ${fmtDateTime(r.ConfirmedAt)}</b></div>` : ''}${r.ReversedAt ? `<div><small>กลับรายการโดย</small><b>${esc(r.ReversedByName)} · ${fmtDateTime(r.ReversedAt)}</b><div class="muted">${esc(r.ReverseReason)}</div></div>` : ''}
+    ${r.Note ? `<div><small>หมายเหตุ</small><b>${esc(r.Note)}</b></div>` : ''}</div>
+    <div id="rcv-lines"></div>${docsHtml(r.documents)}`
+  });
+  renderTable($('#rcv-lines', mm0.el), { rows: r.lines, showCount: false, footer: `<td colspan="9">มูลค่ารับเข้าคลังรวม</td><td class="num">${fmtMoney(tot)}</td><td colspan="3"></td>`, columns: [
+    { label: '#', key: 'LineNo' }, { label: 'เวชภัณฑ์', render: l => `<b>${esc(l.ItemCode)}</b> ${esc(l.ItemName)}` }, { label: 'หน่วย', render: l => esc(l.BaseUnit) + (l.UnitFactor > 1 ? `<div class="muted">รับเป็น ${esc(l.InputUnit)} ×${fmtNum(l.UnitFactor)}</div>` : '') },
+    { label: 'ขอ', num: true, render: l => fmtNum(l.RequestedQty) }, { label: 'ได้รับ', num: true, render: l => fmtNum(l.ReceivedQty) }, { label: 'ชำรุด', num: true, render: l => l.DamagedQty ? `<span style="color:var(--danger)">${fmtNum(l.DamagedQty)}</span>` : '0' },
+    { label: 'ขาด', num: true, render: l => l.ShortageQty ? `<span style="color:#C76A12">${fmtNum(l.ShortageQty)}</span>` : '0' }, { label: 'รับเข้าคลัง', num: true, render: l => `<b>${fmtNum(l.AcceptedQty)}</b>` },
+    { label: 'ราคา/หน่วย', num: true, render: l => fmtMoney(l.UnitCost) }, { label: 'มูลค่า', num: true, render: l => fmtMoney(l.AcceptedQty * l.UnitCost) },
+    { label: 'ล็อต', key: 'LotNo' }, { label: 'หมดอายุ', render: l => fmtDate(l.ExpiryDate) }, { label: 'ที่เก็บ', key: 'StorageLocation' }] });
+}
+
+function confirmReceiptFlow(r, parent) {
+  const acc = r.lines.filter(l => l.AcceptedQty > 0);
+  const m = openModal({ title: 'ยืนยันรับเข้าคลัง ' + r.ReceiptNo, size: 'sm', body: `<div class="alert info">${ic('layers')}<div>ระบบจะเพิ่มยอดคลัง ${acc.length} รายการ ตามจำนวน “รับเข้าคลัง” (ไม่รวมของชำรุด) และไม่สามารถยืนยันซ้ำได้</div></div>
+    <div class="field"><label>ผู้รับของ <span class="req">*</span></label><input class="input" name="ReceivedBy" value="${esc(r.ReceivedBy || S.user.FullName)}"></div>
+    <div class="field"><label>ผู้ตรวจรับ</label><input class="input" name="CheckedBy" value="${esc(r.CheckedBy || '')}"></div><div id="self-ack"></div>`,
+    buttons: [{ label: 'ยกเลิก', onClick: (b, mm) => mm.close() }, { label: 'ยืนยันรับเข้าคลัง', cls: 'primary', onClick: (btn, mm) => {
+      if (!requireFields(mm.el, ['ReceivedBy'])) return;
+      const f = formData(mm.el);
+      const ack = $('#ack', mm.el);
+      if (ack && !ack.checked) { toast('กรุณาติ๊กยืนยัน', 'warn'); return; }
+      withBtn(btn, async () => {
+        try { await api('confirmReceipt', { ReceiptID: r.ReceiptID, ReceivedBy: f.ReceivedBy, CheckedBy: f.CheckedBy, selfConfirmAck: !!(ack && ack.checked) }, { mutate: true }); }
+        catch (e) {
+          if (e.code === 'SELF_CONFIRM_ACK_REQUIRED') { $('#self-ack', mm.el).innerHTML = `<div class="alert warn">${ic('alert')}<div>${esc(e.message)}<label class="check" style="margin-top:8px"><input type="checkbox" id="ack"> ข้าพเจ้าตรวจรับของจริงแล้ว และยืนยันในฐานะผู้สร้างเอกสาร (บันทึกใน Audit Log)</label></div></div>`; return; }
+          throw e;
+        }
+        mm.close(); parent.close(); refreshPage('receipts'); openReceipt(r.ReceiptID);
+      });
+    } }] });
+}
+
+function printReceipt(r) {
+  const rows = r.lines.map(l => `<tr><td>${l.LineNo}</td><td>${esc(l.ItemCode)}</td><td>${esc(l.ItemName)}</td><td>${esc(l.BaseUnit)}</td><td class="num">${fmtNum(l.RequestedQty)}</td><td class="num">${fmtNum(l.ReceivedQty)}</td><td class="num">${fmtNum(l.DamagedQty)}</td><td class="num">${fmtNum(l.ShortageQty)}</td><td class="num">${fmtNum(l.AcceptedQty)}</td><td>${esc(l.LotNo)}</td><td>${fmtDate(l.ExpiryDate)}</td><td class="num">${fmtMoney(l.AcceptedQty * l.UnitCost)}</td></tr>`).join('');
+  printDoc('ใบรับเวชภัณฑ์มิใช่ยา', `<table style="border:none;margin:0"><tr><td style="border:none">เลขที่: <b>${esc(r.ReceiptNo)}</b> (${esc((STATUS_TH[r.Status] || [r.Status])[0])})</td><td style="border:none">แหล่งรับ: ${esc(r.SourceName)}</td><td style="border:none">อ้างอิง: ${esc(r.RequestReference || '-')}</td></tr><tr><td style="border:none">วันที่เอกสาร: ${fmtDate(r.DocumentDate)}</td><td style="border:none">วันที่รับ: ${fmtDate(r.ReceivedDate)}</td><td style="border:none">หมายเหตุ: ${esc(r.Note || '-')}</td></tr></table>
+    <table><thead><tr><th>#</th><th>รหัส</th><th>รายการ</th><th>หน่วย</th><th class="num">ขอ</th><th class="num">ได้รับ</th><th class="num">ชำรุด</th><th class="num">ขาด</th><th class="num">รับเข้า</th><th>ล็อต</th><th>หมดอายุ</th><th class="num">มูลค่า</th></tr></thead><tbody>${rows}</tbody></table>`, { signs: [`ผู้ส่งของ ${r.DeliveredBy || ''}`, `ผู้รับของ ${r.ReceivedBy || ''}`, `ผู้ตรวจรับ ${r.CheckedBy || ''}`] });
+}
+
+function docsHtml(docs) {
+  if (!docs || !docs.length) return '';
+  return `<div class="section-title" style="margin-top:16px">${ic('paperclip')}เอกสารแนบ</div><div style="display:flex;flex-direction:column;gap:6px">${docs.map(d => `<div>${d.FileUrl ? `<a href="${esc(d.FileUrl)}" target="_blank" rel="noopener">${esc(d.FileName)}</a> <span class="muted">(${fmtNum(d.SizeBytes / 1024, 0)} KB)</span>` : ''} ${d.Reference ? `<span class="badge b-gray">อ้างอิง: ${esc(d.Reference)}</span>` : ''} <span class="muted" style="font-size:12.5px">· ${esc(d.UploadedByName)} ${fmtDateTime(d.UploadedAt)}</span></div>`).join('')}</div>`;
+}
+
+function attachDoc(type, id, after, parent) {
+  const m = openModal({ title: 'แนบเอกสาร', size: 'sm', body: `<div class="field"><label>ไฟล์ (PDF/JPG/PNG/WEBP ไม่เกิน 5 MB)</label><input class="input" type="file" id="doc-file" accept="application/pdf,image/jpeg,image/png,image/webp"></div><div class="field"><label>หรือ/และ เลขอ้างอิงเอกสาร</label><input class="input" id="doc-ref" maxlength="300" placeholder="เช่น เลขที่หนังสือ, เลขใบส่งของ"></div><div class="hint" style="font-size:12.5px;color:var(--muted)">ไฟล์ถูกเก็บใน Google Drive ของเจ้าของระบบ และบันทึก File ID ไว้ตรวจสอบได้</div>`,
+    buttons: [{ label: 'ยกเลิก', onClick: (b, mm) => mm.close() }, { label: 'อัปโหลด', cls: 'primary', icon: 'upload', onClick: (btn, mm) => withBtn(btn, async () => {
+      const file = $('#doc-file', mm.el).files[0], ref = $('#doc-ref', mm.el).value.trim();
+      if (!file && !ref) throw new Error('กรุณาเลือกไฟล์หรือระบุเลขอ้างอิง');
+      const p = { EntityType: type, EntityID: id, Reference: ref };
+      if (file) {
+        if (file.size > 5 * 1024 * 1024) throw new Error('ไฟล์ต้องไม่เกิน 5 MB');
+        if (!['application/pdf', 'image/jpeg', 'image/png', 'image/webp'].includes(file.type)) throw new Error('ชนิดไฟล์ไม่รองรับ');
+        Object.assign(p, { fileName: file.name, mimeType: file.type, base64: await fileToBase64(file) });
+      }
+      await api('uploadDocument', p, { mutate: true });
+      mm.close(); if (parent) parent.close(); if (after) after();
+    }) }] });
+}
+
+function refreshPage(id) { if (S.page === id) navigate(id); }
+</script>
+
+<script>
+/* ============================ Requisitions ============================ */
+PAGES.requisitions = async (el, params) => {
+  await loadMaster();
+  const tabs = [['mine', 'ใบเบิกของฉัน', can('CREATE_REQUISITION')], ['pending', 'รออนุมัติ', can('APPROVE_REQUISITION')], ['toissue', 'รอจ่ายจริง', can('ISSUE')], ['all', 'ทั้งหมด', can('VIEW_REQUISITIONS_ALL')]].filter(t => t[2]);
+  const tab = params.tab || (can('APPROVE_REQUISITION') ? 'pending' : can('ISSUE') ? 'toissue' : tabs[0][0]);
+  el.innerHTML = `<div class="tabs">${tabs.map(t => `<button class="tab ${t[0] === tab ? 'active' : ''}" data-t="${t[0]}">${t[1]}</button>`).join('')}</div>
+  <div class="panel"><div class="panel-h"><h3>ใบขอเบิกเวชภัณฑ์<span class="desc">ขอเบิกและอนุมัติยังไม่ตัดยอด — ตัดยอดเมื่อยืนยัน “จ่ายจริง” เท่านั้น (FEFO: หมดอายุก่อนจ่ายก่อน)</span></h3>${can('CREATE_REQUISITION') ? `<button class="btn primary" id="rq-new">${ic('plus')}สร้างใบขอเบิก</button>` : ''}</div>
+  <div class="panel-b"><div class="toolbar"><div class="field grow"><label>ค้นหาเลขที่/หน่วยงาน/วัตถุประสงค์</label><input class="input" id="rq-q"></div>
+  <div class="field"><label>สถานะ</label><select class="input" id="rq-st"><option value="">ทั้งหมด</option>${['Draft', 'PendingApproval', 'Approved', 'PartiallyIssued', 'Issued', 'Rejected', 'Cancelled'].map(s => `<option value="${s}">${STATUS_TH[s][0]}</option>`).join('')}</select></div>
+  <div class="field"><label>ตั้งแต่</label><input class="input" type="date" id="rq-from"></div><div class="field"><label>ถึง</label><input class="input" type="date" id="rq-to"></div>
+  <button class="btn blue" id="rq-go">${ic('search')}ค้นหา</button></div></div><div id="rq-table">${loadingHtml()}</div></div>`;
+  $$('.tab', el).forEach(b => b.onclick = () => navigate('requisitions', { tab: b.dataset.t }));
+  const load = async () => {
+    $('#rq-table').innerHTML = loadingHtml();
+    const st = $('#rq-st').value || (tab === 'pending' ? 'Submitted,PendingApproval' : tab === 'toissue' ? 'Approved,PartiallyIssued' : '');
+    try {
+      const rows = await api('getRequisitions', { mine: tab === 'mine', status: st, search: $('#rq-q').value, dateFrom: $('#rq-from').value, dateTo: $('#rq-to').value });
+      renderTable($('#rq-table'), { rows, emptyTitle: 'ไม่มีใบขอเบิก', onRow: r => openRequisition(r.RequisitionID), columns: [
+        { label: 'เลขที่', render: r => `<b>${esc(r.RequisitionNo)}</b>` }, { label: 'วันที่ขอ', render: r => fmtDate(r.RequestDate) }, { label: 'ผู้ขอ / หน่วยงาน', render: r => esc(r.RequesterName) + `<div class="muted">${esc(r.Department)}</div>` },
+        { label: 'วัตถุประสงค์', key: 'Purpose' }, { label: 'รายการ', num: true, render: r => fmtNum(r.LineCount) }, { label: 'สถานะ', render: r => badge(r.Status) }] });
+    } catch (e) { if (!e.handled) $('#rq-table').innerHTML = errorHtml(e.message); }
+  };
+  $('#rq-go').onclick = load; $('#rq-q').onkeydown = e => { if (e.key === 'Enter') load(); };
+  if ($('#rq-new')) $('#rq-new').onclick = () => requisitionForm(null);
+  load();
+};
+
+function requisitionForm(rq) {
+  const x = rq || {};
+  const depts = Array.from(new Set([...(S.config.departments || []), S.user.Department].filter(Boolean)));
+  let lines = (rq && rq.lines ? rq.lines.map(l => ({ ItemID: l.ItemID, Unit: l.Unit, RequestedQty: l.RequestedQty, Note: l.Note })) : [{}]);
+  const m = openModal({
+    title: rq ? 'แก้ไขร่างใบขอเบิก ' + rq.RequisitionNo : 'สร้างใบขอเบิกเวชภัณฑ์', size: 'lg', dismissable: false,
+    body: `<div class="grid g3" id="rq-h"><div class="field"><label>วันที่ขอเบิก <span class="req">*</span></label><input class="input" type="date" name="RequestDate" value="${esc(x.RequestDate || todayIso())}"></div>
+      <div class="field"><label>หน่วยงาน/แผนก <span class="req">*</span></label><select class="input" name="Department">${depts.map(d => `<option ${d === (x.Department || S.user.Department) ? 'selected' : ''}>${esc(d)}</option>`).join('')}</select></div>
+      <div class="field"><label>ผู้ขอเบิก</label><input class="input" readonly value="${esc(S.user.FullName)}"></div>
+      <div class="field spanall"><label>วัตถุประสงค์ <span class="req">*</span></label><input class="input" name="Purpose" maxlength="500" value="${esc(x.Purpose)}"></div>
+      <div class="field spanall"><label>หมายเหตุ</label><input class="input" name="Note" maxlength="500" value="${esc(x.Note)}"></div></div>
+      <div class="section-title">${ic('box')}รายการที่ขอเบิก</div><div id="rq-lines"></div>${itemDatalist('rq-items', true)}
+      <button class="btn" type="button" id="rq-add">${ic('plus')}เพิ่มรายการ</button>`,
+    buttons: [{ label: 'ยกเลิก', onClick: async (b, mm) => { if (await confirmBox('ปิดแบบฟอร์ม', 'ข้อมูลที่ยังไม่บันทึกจะหายไป')) mm.close(); } },
+      { label: 'บันทึกร่าง', onClick: (btn, mm) => save(btn, mm, false) },
+      { label: 'บันทึกและส่งขออนุมัติ', cls: 'primary', onClick: (btn, mm) => save(btn, mm, true) }]
+  });
+  const box = $('#rq-lines', m.el);
+  const read = () => $$('.line-item', box).forEach((d, i) => { const it = findItemByLabel($('[data-f=item]', d).value); Object.assign(lines[i], { ItemID: it ? it.ItemID : '', _label: $('[data-f=item]', d).value, Unit: $('[data-f=unit]', d).value, RequestedQty: $('[data-f=qty]', d).value, Note: $('[data-f=note]', d).value }); });
+  const draw = () => {
+    box.innerHTML = lines.map((l, i) => { const it = itemById(l.ItemID); const f = factorOf(it, l.Unit); return `<div class="line-item"><div class="grid g4">
+      <div class="field span2"><label>${i + 1}. เวชภัณฑ์ <span class="req">*</span></label><input class="input sm" data-f="item" list="rq-items" value="${esc(it ? itemLabel(it) : (l._label || ''))}"></div>
+      <div class="field"><label>หน่วย</label><select class="input sm" data-f="unit">${unitOptions(it, l.Unit || (it && it.IssueUnit))}</select></div>
+      <div class="field"><label>จำนวนที่ขอ <span class="req">*</span></label><input class="input sm" data-f="qty" type="number" min="0" step="any" value="${esc(l.RequestedQty ?? '')}"></div>
+      <div class="field span3"><label>หมายเหตุ</label><input class="input sm" data-f="note" maxlength="300" value="${esc(l.Note || '')}"></div>
+      <div class="field" style="justify-content:flex-end"><button class="btn sm danger" type="button" data-del="${i}">${ic('trash')}ลบ</button></div></div>
+      <span class="conv">${it ? `พร้อมจ่ายขณะนี้ ${fmtNum(it.Stock ? it.Stock.Available : 0)} ${esc(it.BaseUnit)}${f > 1 && l.RequestedQty ? ` · ขอ ${fmtNum(l.RequestedQty * f)} ${esc(it.BaseUnit)}` : ''}` : 'เลือกรายการจากรายการแนะนำ'}</span></div>`; }).join('');
+    $$('[data-f=item],[data-f=unit]', box).forEach(x => x.addEventListener('change', () => { read(); draw(); }));
+    $$('[data-f=qty]', box).forEach(x => x.addEventListener('change', () => { read(); draw(); }));
+    $$('[data-del]', box).forEach(b => b.onclick = () => { read(); if (lines.length === 1) return toast('ต้องมีอย่างน้อย 1 รายการ', 'warn'); lines.splice(+b.dataset.del, 1); draw(); });
+  };
+  $('#rq-add', m.el).onclick = () => { read(); lines.push({}); draw(); };
+  draw();
+  const save = (btn, mm, submit) => {
+    read();
+    if (!requireFields($('#rq-h', mm.el), ['RequestDate', 'Department', 'Purpose'])) return;
+    const seen = {};
+    for (let i = 0; i < lines.length; i++) {
+      const l = lines[i];
+      if (!l.ItemID) return toast(`รายการที่ ${i + 1}: เลือกเวชภัณฑ์จากรายการแนะนำ`, 'warn');
+      if (!(Number(l.RequestedQty) > 0)) return toast(`รายการที่ ${i + 1}: จำนวนต้องมากกว่า 0`, 'warn');
+      if (seen[l.ItemID]) return toast(`รายการที่ ${i + 1}: รายการซ้ำ`, 'warn'); seen[l.ItemID] = 1;
+    }
+    const payload = { ...formData($('#rq-h', mm.el)), lines: lines.map(l => ({ ItemID: l.ItemID, Unit: l.Unit, RequestedQty: l.RequestedQty, Note: l.Note })) };
+    withBtn(btn, async () => {
+      let r;
+      if (rq) { r = await api('updateRequisition', { ...payload, RequisitionID: rq.RequisitionID }, { mutate: true }); if (submit) r = await api('submitRequisition', { RequisitionID: rq.RequisitionID }, { mutate: true }); }
+      else r = await api('createRequisition', { ...payload, submit }, { mutate: true });
+      mm.close(); refreshPage('requisitions'); openRequisition(r.RequisitionID);
+    });
+  };
+}
+
+async function openRequisition(id) {
+  const tmp = openModal({ title: 'ใบขอเบิก', size: 'xl', body: loadingHtml(), footer: false });
+  let r;
+  try { r = await api('getRequisition', { RequisitionID: id }); } catch (e) { tmp.body.innerHTML = errorHtml(e.message); return; }
+  tmp.close();
+  const own = r.RequesterID === S.user.UserID, sod = S.config.separationOfDuties;
+  const acts = [];
+  const reload = (mm) => { mm.close(); refreshPage('requisitions'); openRequisition(r.RequisitionID); };
+  if (['Draft', 'PendingApproval', 'Submitted'].includes(r.Status) && own || (r.Status === 'Approved' && can('APPROVE_REQUISITION')) || (['PendingApproval', 'Submitted'].includes(r.Status) && can('APPROVE_REQUISITION')))
+    acts.push({ label: 'ยกเลิกใบเบิก', cls: 'danger', onClick: async (btn, mm) => { const why = await confirmBox('ยกเลิกใบเบิก', `ยกเลิก ${esc(r.RequisitionNo)}`, { reason: true, danger: true, okLabel: 'ยกเลิกใบเบิก' }); if (why) withBtn(btn, async () => { await api('cancelRequisition', { RequisitionID: r.RequisitionID, reason: why }, { mutate: true }); reload(mm); }); } });
+  if (['PendingApproval', 'Submitted'].includes(r.Status) && can('APPROVE_REQUISITION') && !(sod && own))
+    acts.push({ label: 'ไม่อนุมัติ', cls: 'danger', onClick: async (btn, mm) => { const why = await confirmBox('ไม่อนุมัติใบเบิก', `ระบุเหตุผลที่ไม่อนุมัติ ${esc(r.RequisitionNo)}`, { reason: true, danger: true, okLabel: 'ไม่อนุมัติ' }); if (why) withBtn(btn, async () => { await api('rejectRequisition', { RequisitionID: r.RequisitionID, reason: why }, { mutate: true }); reload(mm); }); } });
+  if (r.Status === 'PartiallyIssued' && can('ISSUE', 'APPROVE_REQUISITION'))
+    acts.push({ label: 'ปิดยอดค้างจ่าย', onClick: async (btn, mm) => { const why = await confirmBox('ปิดยอดค้างจ่าย', 'ยอดอนุมัติที่ยังไม่จ่ายจะถูกยกเลิกการจอง', { reason: true, okLabel: 'ปิดยอดค้าง' }); if (why) withBtn(btn, async () => { await api('closeRequisition', { RequisitionID: r.RequisitionID, reason: why }, { mutate: true }); reload(mm); }); } });
+  acts.push({ label: 'พิมพ์', icon: 'printer', onClick: () => printRequisition(r) });
+  if (r.Status === 'Draft' && own) {
+    acts.push({ label: 'แก้ไข', icon: 'edit', onClick: (b, mm) => { mm.close(); requisitionForm(r); } });
+    acts.push({ label: 'ส่งขออนุมัติ', cls: 'primary', onClick: (btn, mm) => withBtn(btn, async () => { await api('submitRequisition', { RequisitionID: r.RequisitionID }, { mutate: true }); reload(mm); }) });
+  }
+  if (['PendingApproval', 'Submitted'].includes(r.Status) && can('APPROVE_REQUISITION') && !(sod && own))
+    acts.push({ label: 'อนุมัติ', cls: 'primary', icon: 'check', onClick: (b, mm) => approveFlow(r, mm) });
+  if (['Approved', 'PartiallyIssued'].includes(r.Status) && can('ISSUE'))
+    acts.push({ label: 'จ่ายเวชภัณฑ์จริง', cls: 'blue', icon: 'truck', onClick: (b, mm) => issueFlow(r, mm) });
+  const m = openModal({
+    title: `ใบขอเบิก ${r.RequisitionNo}`, size: 'xl', buttons: acts,
+    body: `${sod && own && ['PendingApproval', 'Submitted'].includes(r.Status) && can('APPROVE_REQUISITION') ? `<div class="alert info">${ic('shield')}<div>ใบเบิกนี้เป็นของคุณ — ต้องให้ผู้อนุมัติคนอื่นอนุมัติ (การแบ่งแยกหน้าที่)</div></div>` : ''}
+    <div class="kv"><div><small>สถานะ</small><b>${badge(r.Status)}</b></div><div><small>วันที่ขอ</small><b>${fmtDate(r.RequestDate)}</b></div><div><small>ผู้ขอ</small><b>${esc(r.RequesterName)}</b></div><div><small>หน่วยงาน</small><b>${esc(r.Department)}</b></div>
+    <div><small>วัตถุประสงค์</small><b>${esc(r.Purpose)}</b></div>${r.ApprovedAt ? `<div><small>${r.Status === 'Rejected' ? 'ไม่อนุมัติโดย' : 'อนุมัติโดย'}</small><b>${esc(r.ApprovedByName)} · ${fmtDateTime(r.ApprovedAt)}</b></div>` : ''}
+    ${r.RejectReason ? `<div><small>เหตุผลที่ไม่อนุมัติ</small><b style="color:var(--danger)">${esc(r.RejectReason)}</b></div>` : ''}${r.IssuedAt ? `<div><small>จ่ายล่าสุดโดย</small><b>${esc(r.IssuedByName)} · ${fmtDateTime(r.IssuedAt)}</b></div><div><small>ผู้รับของ</small><b>${esc(r.ReceivedBy)}</b></div>` : ''}
+    ${r.CancelReason ? `<div><small>เหตุผลการยกเลิก</small><b>${esc(r.CancelReason)}</b></div>` : ''}${r.Note ? `<div><small>หมายเหตุ</small><b>${esc(r.Note)}</b></div>` : ''}</div>
+    <div id="rqv-lines"></div><div class="section-title" style="margin-top:16px">${ic('history')}ประวัติการจ่ายตามล็อต</div><div id="rqv-issues"></div>`
+  });
+  renderTable($('#rqv-lines', m.el), { rows: r.lines, showCount: false, columns: [
+    { label: '#', key: 'LineNo' }, { label: 'เวชภัณฑ์', render: l => `<b>${esc(l.ItemCode)}</b> ${esc(l.ItemName)}` + (l.Note ? `<div class="muted">${esc(l.Note)}</div>` : '') }, { label: 'หน่วย', key: 'Unit' },
+    { label: 'ขอ', num: true, render: l => fmtNum(l.RequestedQty) }, { label: 'อนุมัติ', num: true, render: l => l.ApprovedQty === null ? '-' : fmtNum(l.ApprovedQty) }, { label: 'จ่ายแล้ว', num: true, render: l => fmtNum(l.IssuedQty) },
+    { label: 'ค้างจ่าย', num: true, render: l => l.ApprovedQty === null ? '-' : fmtNum(Math.max(l.ApprovedQty - l.IssuedQty, 0)) }, { label: 'พร้อมจ่าย (คลัง)', num: true, render: l => fmtNum(l.Available) }] });
+  renderTable($('#rqv-issues', m.el), { rows: r.issues, showCount: false, emptyTitle: 'ยังไม่มีการจ่าย', columns: [{ label: 'วันที่', render: t => fmtDate(t.TransactionDate) }, { label: 'ประเภท', render: t => esc(TXN_TH[t.TransactionType]) }, { label: 'เวชภัณฑ์', render: t => esc(t.ItemCode + ' ' + t.ItemName) }, { label: 'ล็อต / หมดอายุ', render: t => esc(t.LotNo) + `<div class="muted">${fmtDate(t.ExpiryDate)}</div>` }, { label: 'จำนวน', num: true, render: t => t.QtyOut ? fmtNum(t.QtyOut) : '+' + fmtNum(t.QtyIn) }, { label: 'ผู้จ่าย', key: 'PerformedByName' }] });
+}
+
+function approveFlow(r, parent) {
+  const m = openModal({ title: 'อนุมัติใบเบิก ' + r.RequisitionNo, size: 'lg', body: `<div class="alert info">${ic('alert')}<div>การอนุมัติจะ “จอง” ยอดไว้ แต่ยังไม่ตัดยอดคลัง · อนุมัติได้ไม่เกินยอดพร้อมจ่าย (หน่วยพื้นฐาน)</div></div><div class="table-wrap"><table class="tbl"><thead><tr><th>เวชภัณฑ์</th><th class="num">ขอ</th><th class="num">พร้อมจ่าย</th><th class="num">จำนวนอนุมัติ</th></tr></thead><tbody>${r.lines.map(l => `<tr><td><b>${esc(l.ItemCode)}</b> ${esc(l.ItemName)}<div class="muted">${esc(l.Unit)}</div></td><td class="num">${fmtNum(l.RequestedQty)}</td><td class="num">${fmtNum(l.Available)}</td><td class="num"><input class="input sm" style="max-width:120px;margin-left:auto" type="number" min="0" step="any" max="${l.RequestedQty}" data-id="${l.RequisitionDetailID}" value="${Math.min(l.RequestedQty, l.Available)}"></td></tr>`).join('')}</tbody></table></div><div class="field" style="margin-top:12px"><label>หมายเหตุผู้อนุมัติ</label><input class="input" id="ap-note" maxlength="300"></div>`,
+    buttons: [{ label: 'ยกเลิก', onClick: (b, mm) => mm.close() }, { label: 'ยืนยันอนุมัติ', cls: 'primary', icon: 'check', onClick: (btn, mm) => {
+      const lines = $$('[data-id]', mm.el).map(i => ({ RequisitionDetailID: i.dataset.id, ApprovedQty: i.value === '' ? 0 : Number(i.value), max: Number(i.max) }));
+      if (lines.some(l => l.ApprovedQty < 0 || l.ApprovedQty > l.max)) return toast('จำนวนอนุมัติต้องอยู่ระหว่าง 0 ถึงจำนวนที่ขอ', 'warn');
+      if (!lines.some(l => l.ApprovedQty > 0)) return toast('จำนวนอนุมัติรวมเป็น 0 — หากไม่อนุมัติให้ใช้ปุ่ม “ไม่อนุมัติ”', 'warn');
+      withBtn(btn, async () => { await api('approveRequisition', { RequisitionID: r.RequisitionID, lines, note: $('#ap-note', mm.el).value }, { mutate: true }); mm.close(); parent.close(); refreshPage('requisitions'); openRequisition(r.RequisitionID); });
+    } }] });
+}
+
+function issueFlow(r, parent) {
+  const open = r.lines.filter(l => l.ApprovedQty > l.IssuedQty);
+  const m = openModal({ title: 'จ่ายเวชภัณฑ์จริง ' + r.RequisitionNo, size: 'lg', body: `<div class="alert warn">${ic('alert')}<div>ระบบเลือกล็อตแบบ FEFO อัตโนมัติ (ล็อตที่หมดอายุก่อนจ่ายก่อน) และไม่จ่ายล็อตหมดอายุ/กักกัน/ชำรุด · การยืนยันจะตัดยอดคลังทันที</div></div>
+    <div class="grid g2"><div class="field"><label>วันที่จ่าย <span class="req">*</span></label><input class="input" type="date" id="is-date" max="${todayIso()}" value="${todayIso()}"></div><div class="field"><label>ผู้รับของ <span class="req">*</span></label><input class="input" id="is-recv" maxlength="100" value="${esc(r.RequesterName)}"></div></div>
+    <div class="table-wrap"><table class="tbl"><thead><tr><th>เวชภัณฑ์</th><th class="num">ค้างจ่าย</th><th class="num">จ่ายได้</th><th class="num">จ่ายครั้งนี้</th></tr></thead><tbody>${open.map(l => `<tr><td><b>${esc(l.ItemCode)}</b> ${esc(l.ItemName)}<div class="muted">${esc(l.Unit)}</div></td><td class="num">${fmtNum(l.ApprovedQty - l.IssuedQty)}</td><td class="num">${fmtNum(l.AvailableForThis)}</td><td class="num"><input class="input sm" style="max-width:120px;margin-left:auto" type="number" min="0" step="any" data-id="${l.RequisitionDetailID}" data-max="${l.ApprovedQty - l.IssuedQty}" value="${Math.min(l.ApprovedQty - l.IssuedQty, l.AvailableForThis)}"></td></tr>`).join('')}</tbody></table></div>
+    <div id="is-plan" style="margin-top:14px"></div>`,
+    buttons: [{ label: 'ยกเลิก', onClick: (b, mm) => mm.close() }, { label: 'ตรวจสอบล็อต (FEFO)', icon: 'search', onClick: (btn, mm) => withBtn(btn, () => plan(mm)) }, { label: 'ยืนยันจ่ายจริง', cls: 'blue', icon: 'check', id: 'is-ok', onClick: (btn, mm) => {
+      const lines = collect(mm); if (!lines) return;
+      if (!$('#is-recv', mm.el).value.trim()) return toast('ระบุผู้รับของ', 'warn');
+      withBtn(btn, async () => { await api('issueRequisition', { RequisitionID: r.RequisitionID, lines, ReceivedBy: $('#is-recv', mm.el).value.trim(), IssueDate: $('#is-date', mm.el).value }, { mutate: true }); mm.close(); parent.close(); refreshPage('requisitions'); openRequisition(r.RequisitionID); });
+    } }] });
+  const collect = (mm) => {
+    const lines = $$('[data-id]', mm.el).map(i => ({ RequisitionDetailID: i.dataset.id, Qty: Number(i.value) || 0, max: Number(i.dataset.max) }));
+    if (lines.some(l => l.Qty < 0 || l.Qty > l.max)) { toast('จำนวนจ่ายต้องไม่เกินยอดค้างจ่าย', 'warn'); return null; }
+    if (!lines.some(l => l.Qty > 0)) { toast('ไม่มีจำนวนที่จะจ่าย', 'warn'); return null; }
+    return lines;
+  };
+  const plan = async (mm) => {
+    const lines = collect(mm); if (!lines) return;
+    const p = await api('getIssuePlan', { RequisitionID: r.RequisitionID, lines });
+    $('#is-plan', mm.el).innerHTML = `<div class="section-title">${ic('layers')}ล็อตที่จะจ่าย (FEFO)</div>` + p.map(x => `<div class="line-item"><b>${esc(x.ItemCode)} ${esc(x.ItemName)}</b> — ${fmtNum(x.Qty)} ${esc(x.Unit)}${x.error ? `<div class="alert err" style="margin:8px 0 0">${esc(x.error)}</div>` : `<div class="muted">${x.lots.map(l => `ล็อต ${esc(l.LotNo)} (หมดอายุ ${fmtDate(l.ExpiryDate) || '-'}, ${esc(l.StorageLocation)}) × ${fmtNum(l.Qty)}`).join('<br>')}</div>`}</div>`).join('');
+  };
+}
+
+function printRequisition(r) {
+  const rows = r.lines.map(l => `<tr><td>${l.LineNo}</td><td>${esc(l.ItemCode)}</td><td>${esc(l.ItemName)}</td><td>${esc(l.Unit)}</td><td class="num">${fmtNum(l.RequestedQty)}</td><td class="num">${l.ApprovedQty === null ? '-' : fmtNum(l.ApprovedQty)}</td><td class="num">${fmtNum(l.IssuedQty)}</td><td>${esc(l.Note || '')}</td></tr>`).join('');
+  const lots = r.issues.length ? `<h4 style="margin-top:12px">รายละเอียดการจ่ายตามล็อต</h4><table><thead><tr><th>วันที่</th><th>รายการ</th><th>ล็อต</th><th>หมดอายุ</th><th class="num">จำนวน</th></tr></thead><tbody>${r.issues.map(t => `<tr><td>${fmtDate(t.TransactionDate)}</td><td>${esc(t.ItemCode + ' ' + t.ItemName)}</td><td>${esc(t.LotNo)}</td><td>${fmtDate(t.ExpiryDate)}</td><td class="num">${t.QtyOut ? fmtNum(t.QtyOut) : '+' + fmtNum(t.QtyIn)}</td></tr>`).join('')}</tbody></table>` : '';
+  printDoc('ใบขอเบิกเวชภัณฑ์มิใช่ยา', `<p>เลขที่ <b>${esc(r.RequisitionNo)}</b> · วันที่ ${fmtDate(r.RequestDate)} · หน่วยงาน ${esc(r.Department)} · สถานะ ${esc((STATUS_TH[r.Status] || [r.Status])[0])}<br>วัตถุประสงค์: ${esc(r.Purpose)}</p>
+    <table><thead><tr><th>#</th><th>รหัส</th><th>รายการ</th><th>หน่วย</th><th class="num">ขอ</th><th class="num">อนุมัติ</th><th class="num">จ่าย</th><th>หมายเหตุ</th></tr></thead><tbody>${rows}</tbody></table>${lots}`,
+    { signs: [`ผู้ขอเบิก ${r.RequesterName}`, `ผู้อนุมัติ ${r.ApprovedByName || ''}`, `ผู้จ่าย ${r.IssuedByName || ''}`, `ผู้รับของ ${r.ReceivedBy || ''}`] });
+}
+
+/* ============================ Stock ============================ */
+PAGES.stock = async (el, params) => {
+  await loadMaster();
+  const tabs = [['items', 'ยอดคงเหลือรายรายการ', true], ['lots', 'ล็อตและวันหมดอายุ', true], ['ledger', 'บัญชีธุรกรรม', can('VIEW_REPORTS', 'ISSUE', 'STOCK_COUNT')], ['adjust', 'คำขอปรับปรุงยอด', can('REQUEST_ADJUST', 'APPROVE_ADJUST', 'VIEW_REPORTS')]].filter(t => t[2]);
+  const tab = params.tab || 'items';
+  el.innerHTML = `<div class="tabs">${tabs.map(t => `<button class="tab ${t[0] === tab ? 'active' : ''}" data-t="${t[0]}">${t[1]}</button>`).join('')}</div><div id="st-body">${loadingHtml()}</div>`;
+  $$('.tab', el).forEach(b => b.onclick = () => navigate('stock', { tab: b.dataset.t }));
+  const body = $('#st-body');
+  if (tab === 'ledger') return stockLedger(body, params);
+  if (tab === 'adjust') return stockAdjustments(body, params);
+  body.innerHTML = `<div class="panel"><div class="panel-h"><h3>${tab === 'items' ? 'ยอดคงเหลือ' : 'ล็อตเวชภัณฑ์'}<span class="desc">คงเหลือทางกายภาพ = รับเข้า + รับคืน + ปรับเพิ่ม + โอนเข้า − จ่าย − ปรับลด − โอนออก − ตัดชำรุด/หมดอายุ · พร้อมจ่าย = ใช้ได้ − ยอดจอง (ไม่รวมกักกัน/ชำรุด/หมดอายุ)</span></h3>
+    ${tab === 'lots' && can('REQUEST_ADJUST') ? `<button class="btn" id="st-adj">${ic('edit')}ขอปรับปรุงยอด</button>` : ''}</div>
+    <div class="panel-b"><div class="toolbar"><div class="field grow"><label>ค้นหารหัส/ชื่อ</label><input class="input" id="st-q" value="${esc(params.search || '')}"></div>
+    <div class="field"><label>หมวดหมู่</label><select class="input" id="st-cat">${optionList(S.categories || [], 'CategoryID', c => c.CategoryName, '', 'ทุกหมวดหมู่')}</select></div>
+    <div class="field"><label>แสดง</label><select class="input" id="st-f">${tab === 'items' ? '<option value="">ทั้งหมด</option><option value="stock">มียอดคงเหลือ</option><option value="low">ต่ำกว่าจุดสั่งซื้อ</option>' : '<option value="">ทุกล็อตที่มียอด</option><option value="near">ใกล้หมดอายุ</option><option value="expired">หมดอายุ</option><option value="hold">กักกัน/ชำรุด</option>'}</select></div>
+    <button class="btn blue" id="st-go">${ic('search')}แสดง</button></div></div><div id="st-table">${loadingHtml()}</div></div>`;
+  const load = async () => {
+    $('#st-table').innerHTML = loadingHtml();
+    try {
+      const d = await api('getStockBalance', { search: $('#st-q').value, categoryId: $('#st-cat').value, onlyWithStock: $('#st-f').value === 'stock' });
+      const f = $('#st-f').value;
+      if (tab === 'items') {
+        const rows = d.items.filter(r => f !== 'low' || r.BelowReorder);
+        const total = rows.reduce((s, r) => s + r.Value, 0);
+        renderTable($('#st-table'), { rows, emptyTitle: 'ไม่พบรายการ', onRow: r => navigate('stock', { tab: 'lots', search: r.ItemCode }), footer: `<td colspan="10">มูลค่ารวม${rows.some(r => r.ValueEstimated) ? ' (มีส่วนประมาณการ)' : ''}</td><td class="num">${fmtMoney(total)}</td>`, columns: [
+          { label: 'เวชภัณฑ์', render: r => `<b>${esc(r.ItemCode)}</b> ${esc(r.ItemName)}<div class="muted">${esc(r.CategoryName)}</div>` }, { label: 'หน่วย', key: 'BaseUnit' },
+          { label: 'คงเหลือ', num: true, render: r => fmtNum(r.OnHand) }, { label: 'ใช้ได้', num: true, render: r => fmtNum(r.Usable) }, { label: 'จอง', num: true, render: r => r.Reserved ? fmtNum(r.Reserved) : '0' },
+          { label: 'พร้อมจ่าย', num: true, render: r => `<b style="color:${r.BelowReorder ? 'var(--danger)' : 'var(--emerald-d)'}">${fmtNum(r.Available)}</b>${r.OverReserved ? '<div class="muted" style="color:var(--danger)">จองเกินยอด</div>' : ''}` },
+          { label: 'กักกัน', num: true, render: r => r.Quarantine ? `<span class="badge b-orange">${fmtNum(r.Quarantine)}</span>` : '0' }, { label: 'ชำรุด', num: true, render: r => r.Damaged ? `<span class="badge b-red">${fmtNum(r.Damaged)}</span>` : '0' },
+          { label: 'หมดอายุ', num: true, render: r => r.Expired ? `<span class="badge b-red">${fmtNum(r.Expired)}</span>` : '0' }, { label: 'จุดสั่งซื้อ', num: true, render: r => fmtNum(r.ReorderPoint) }, { label: 'มูลค่า', num: true, render: r => fmtMoney(r.Value) + (r.ValueEstimated ? '<div class="muted">ประมาณการ</div>' : '') }] });
+      } else {
+        const rows = d.lots.filter(l => !f || (f === 'near' && l.NearExpiry && l.Status === 'ACTIVE') || (f === 'expired' && l.IsExpired) || (f === 'hold' && l.Status !== 'ACTIVE'));
+        renderTable($('#st-table'), { rows, emptyTitle: 'ไม่พบล็อตที่มียอดคงเหลือ', columns: [
+          { label: 'เวชภัณฑ์', render: l => `<b>${esc(l.ItemCode)}</b> ${esc(l.ItemName)}` }, { label: 'ล็อต', render: l => `<b>${esc(l.LotNo)}</b>` },
+          { label: 'วันหมดอายุ', render: l => fmtDate(l.ExpiryDate) + (l.IsExpired ? ' <span class="badge b-red">หมดอายุ</span>' : l.NearExpiry ? ` <span class="badge b-warn">อีก ${l.DaysToExpiry} วัน</span>` : '') },
+          { label: 'ที่เก็บ', key: 'StorageLocation' }, { label: 'สถานะ', render: l => badge(l.Status) + (l.Issuable ? '' : ' <span class="badge b-gray">ห้ามจ่าย</span>') },
+          { label: 'คงเหลือ', num: true, render: l => `<b>${fmtNum(l.OnHand)}</b> ${esc(l.BaseUnit)}` }, { label: 'ต้นทุน/หน่วย', num: true, render: l => l.CostMissing ? '<span class="muted">ไม่มีราคา</span>' : fmtMoney(l.UnitCost) + (l.CostEstimated ? '<div class="muted">ราคาทะเบียน</div>' : '') },
+          { label: '', render: l => `<div style="display:flex;gap:4px;justify-content:flex-end">${can('STOCK_COUNT') ? `<button class="btn sm" data-mv="${l.LotID}" title="ย้าย/กักกัน">${ic('move')}</button>` : ''}${can('REQUEST_ADJUST') ? `<button class="btn sm" data-adj="${l.LotID}" title="ขอปรับปรุงยอด">${ic('edit')}</button>` : ''}${can('VIEW_REPORTS', 'ISSUE', 'STOCK_COUNT') ? `<button class="btn sm" data-led="${l.LotID}" title="ดูธุรกรรม">${ic('history')}</button>` : ''}</div>` }],
+          after: (c) => {
+            $$('[data-mv]', c).forEach(b => b.onclick = () => moveLotForm(rows.find(l => l.LotID === b.dataset.mv), load));
+            $$('[data-adj]', c).forEach(b => b.onclick = () => adjustmentForm(rows.find(l => l.LotID === b.dataset.adj), load));
+            $$('[data-led]', c).forEach(b => b.onclick = () => navigate('stock', { tab: 'ledger', lotId: b.dataset.led }));
+          } });
+      }
+    } catch (e) { if (!e.handled) $('#st-table').innerHTML = errorHtml(e.message); }
+  };
+  $('#st-go').onclick = load; $('#st-q').onkeydown = e => { if (e.key === 'Enter') load(); }; $('#st-f').onchange = load; $('#st-cat').onchange = load;
+  if ($('#st-adj')) $('#st-adj').onclick = () => adjustmentForm(null, load);
+  load();
+};
+
+function moveLotForm(l, after) {
+  const locs = S.config.locations || [];
+  openModal({ title: `ย้ายล็อต / เปลี่ยนสถานะ — ${l.ItemCode} ล็อต ${l.LotNo}`, size: 'sm', body: `<div class="alert info">${ic('move')}<div>ใช้ธุรกรรมโอนออก/โอนเข้า (TRANSFER) — ยอดกายภาพไม่เปลี่ยน แต่ล็อตสถานะกักกัน/ชำรุดจะไม่ถูกนับเป็นยอดพร้อมจ่าย${l.Status !== 'ACTIVE' ? ' · การปล่อยกลับเป็น “ใช้งานได้” ต้องมีสิทธิ์อนุมัติปรับปรุงยอด' : ''}</div></div>
+    <div class="kv"><div><small>สถานะปัจจุบัน</small><b>${badge(l.Status)}</b></div><div><small>คงเหลือ</small><b>${fmtNum(l.OnHand)} ${esc(l.BaseUnit)}</b></div></div>
+    <div class="field"><label>จำนวน <span class="req">*</span></label><input class="input" type="number" name="Qty" min="0" step="any" max="${l.OnHand}" value="${l.OnHand}"></div>
+    <div class="field"><label>สถานะปลายทาง</label><select class="input" name="TargetStatus">${['ACTIVE', 'QUARANTINE', 'DAMAGED'].map(s => `<option value="${s}" ${s === (l.Status === 'ACTIVE' ? 'QUARANTINE' : 'ACTIVE') ? 'selected' : ''}>${STATUS_TH[s][0]}</option>`).join('')}</select></div>
+    <div class="field"><label>ตำแหน่งจัดเก็บปลายทาง</label><input class="input" name="TargetLocation" list="mv-locs" value="${esc(l.StorageLocation)}"><datalist id="mv-locs">${locs.map(x => `<option value="${esc(x)}">`).join('')}</datalist></div>
+    <div class="field"><label>เหตุผล <span class="req">*</span></label><textarea class="input" name="Reason" maxlength="500"></textarea></div>`,
+    buttons: [{ label: 'ยกเลิก', onClick: (b, m) => m.close() }, { label: 'บันทึก', cls: 'primary', onClick: (btn, m) => {
+      if (!requireFields(m.el, ['Qty', 'Reason'])) return;
+      const f = formData(m.el);
+      if (!(Number(f.Qty) > 0) || Number(f.Qty) > l.OnHand) return toast('จำนวนต้องมากกว่า 0 และไม่เกินยอดคงเหลือ', 'warn');
+      withBtn(btn, async () => { await api('moveStock', { LotID: l.LotID, ...f }, { mutate: true }); m.close(); after && after(); });
+    } }] });
+}
+
+async function adjustmentForm(lot, after) {
+  let lots = null;
+  if (!lot) lots = await api('getLots', { includeZero: false });
+  const types = [['ADJUSTMENT_IN', 'ปรับเพิ่ม'], ['ADJUSTMENT_OUT', 'ปรับลด'], ['RETURN', 'รับคืนจากหน่วยงาน'], ['DAMAGE', 'ตัดจำหน่ายของชำรุด'], ['EXPIRED', 'ตัดจำหน่ายของหมดอายุ']];
+  openModal({ title: 'ขอปรับปรุงยอด (ต้องได้รับอนุมัติ)', size: 'sm', body: `<div class="alert warn">${ic('alert')}<div>คำขอนี้ยังไม่เปลี่ยนยอดคลังจนกว่าผู้มีสิทธิ์จะอนุมัติ</div></div>
+    <div class="field"><label>ล็อต <span class="req">*</span></label>${lot ? `<input class="input" readonly value="${esc(lot.ItemCode + ' ' + lot.ItemName + ' · ล็อต ' + lot.LotNo + ' · คงเหลือ ' + lot.OnHand + ' ' + lot.BaseUnit)}"><input type="hidden" name="LotID" value="${esc(lot.LotID)}">` : `<select class="input" name="LotID">${optionList(lots, 'LotID', l => `${l.ItemCode} ${l.ItemName} · ล็อต ${l.LotNo} · ${STATUS_TH[l.Status][0]}${l.IsExpired ? ' (หมดอายุ)' : ''} · คงเหลือ ${l.OnHand} ${l.BaseUnit}`, '', '— เลือกล็อต —')}</select>`}</div>
+    <div class="field"><label>ประเภท <span class="req">*</span></label><select class="input" name="AdjustmentType">${types.map(t => `<option value="${t[0]}" ${lot && lot.IsExpired && t[0] === 'EXPIRED' ? 'selected' : ''}>${t[1]}</option>`).join('')}</select></div>
+    <div class="field"><label>จำนวน (หน่วยพื้นฐาน) <span class="req">*</span></label><input class="input" type="number" name="Qty" min="0" step="any"></div>
+    <div class="field"><label>เหตุผล <span class="req">*</span></label><textarea class="input" name="Reason" maxlength="500"></textarea></div>
+    <div class="field"><label>เลขอ้างอิงหลักฐาน</label><input class="input" name="AttachmentReference" maxlength="300"></div>`,
+    buttons: [{ label: 'ยกเลิก', onClick: (b, m) => m.close() }, { label: 'ส่งคำขอ', cls: 'primary', onClick: (btn, m) => {
+      if (!requireFields(m.el, ['LotID', 'AdjustmentType', 'Qty', 'Reason'])) return;
+      const f = formData(m.el);
+      if (!(Number(f.Qty) > 0)) return toast('จำนวนต้องมากกว่า 0', 'warn');
+      withBtn(btn, async () => { await api('createAdjustment', f, { mutate: true }); m.close(); after && after(); });
+    } }] });
+}
+
+async function stockLedger(body, params) {
+  body.innerHTML = `<div class="panel"><div class="panel-h"><h3>บัญชีธุรกรรมคลัง (Stock Ledger)<span class="desc">ประวัติแก้ไข/ลบไม่ได้ — แก้ไขด้วยการ “กลับรายการ” ซึ่งสร้างธุรกรรมใหม่ที่ตรวจสอบได้</span></h3></div>
+  <div class="panel-b"><div class="toolbar"><div class="field grow"><label>ค้นหา</label><input class="input" id="lg-q"></div>
+  <div class="field"><label>ประเภท</label><select class="input" id="lg-type"><option value="">ทั้งหมด</option>${Object.keys(TXN_TH).map(k => `<option value="${k}">${TXN_TH[k]}</option>`).join('')}</select></div>
+  <div class="field"><label>ตั้งแต่</label><input class="input" type="date" id="lg-from"></div><div class="field"><label>ถึง</label><input class="input" type="date" id="lg-to"></div>
+  <button class="btn blue" id="lg-go">${ic('search')}ค้นหา</button></div>${params.lotId ? `<div class="alert info">${ic('layers')}<div>กรองเฉพาะล็อตที่เลือก <a href="#" id="lg-clear">แสดงทั้งหมด</a></div></div>` : ''}</div><div id="lg-table"></div></div>`;
+  let lotId = params.lotId || '';
+  const load = async () => {
+    $('#lg-table').innerHTML = loadingHtml();
+    try {
+      const d = await api('getStockTransactions', { search: $('#lg-q').value, type: $('#lg-type').value, dateFrom: $('#lg-from').value, dateTo: $('#lg-to').value, lotId, limit: 1000 });
+      renderTable($('#lg-table'), { rows: d.rows, emptyTitle: 'ยังไม่มีธุรกรรม', columns: [
+        { label: 'วันที่', render: t => fmtDate(t.TransactionDate) + `<div class="muted">${esc(t.StockTransactionID)}</div>` }, { label: 'ประเภท', render: t => `<span class="badge ${t.QtyIn ? 'b-green' : 'b-blue'}">${esc(TXN_TH[t.TransactionType] || t.TransactionType)}</span>` + (t.ReversedBy ? ' <span class="badge b-red">ถูกกลับรายการ</span>' : '') },
+        { label: 'เวชภัณฑ์ / ล็อต', render: t => `<b>${esc(t.ItemCode)}</b> ${esc(t.ItemName)}<div class="muted">ล็อต ${esc(t.LotNo)} · ${esc(t.LotStatus || '')}</div>` }, { label: 'อ้างอิง', render: t => esc(t.ReferenceNo) + `<div class="muted">${esc(t.Note)}</div>` },
+        { label: 'รับ', num: true, render: t => t.QtyIn ? '+' + fmtNum(t.QtyIn) : '' }, { label: 'จ่าย', num: true, render: t => t.QtyOut ? '−' + fmtNum(t.QtyOut) : '' }, { label: 'คงเหลือล็อต', num: true, render: t => fmtNum(t.BalanceAfter) },
+        { label: 'ผู้ทำรายการ', render: t => esc(t.PerformedByName) + (t.ApprovedByName ? `<div class="muted">อนุมัติ: ${esc(t.ApprovedByName)}</div>` : '') },
+        { label: '', render: t => can('REVERSE') && t.TransactionType !== 'REVERSAL' && t.TransactionType !== 'RECEIPT' && !t.ReversedBy ? `<button class="btn sm danger" data-rev="${esc(t.StockTransactionID)}">${ic('undo')}กลับรายการ</button>` : '' }],
+        after: c => $$('[data-rev]', c).forEach(b => b.onclick = async () => {
+          const why = await confirmBox('กลับรายการธุรกรรม', `สร้างธุรกรรม REVERSAL ตรงข้ามกับ <b>${esc(b.dataset.rev)}</b> (ธุรกรรมโอนจะกลับทั้งคู่) — ประวัติเดิมยังอยู่`, { reason: true, danger: true, okLabel: 'กลับรายการ' });
+          if (why) withBtn(b, async () => { await api('reverseTransaction', { StockTransactionID: b.dataset.rev, reason: why }, { mutate: true }); load(); });
+        }) });
+      if (d.total > d.rows.length) $('#lg-table').insertAdjacentHTML('beforeend', `<div class="pager">แสดง ${d.rows.length} รายการล่าสุดจาก ${d.total} — ใช้ตัวกรองเพื่อจำกัดผลลัพธ์</div>`);
+    } catch (e) { if (!e.handled) $('#lg-table').innerHTML = errorHtml(e.message); }
+  };
+  $('#lg-go').onclick = load;
+  if ($('#lg-clear')) $('#lg-clear').onclick = (e) => { e.preventDefault(); lotId = ''; e.target.closest('.alert').remove(); load(); };
+  load();
+}
+
+async function stockAdjustments(body) {
+  body.innerHTML = `<div class="panel"><div class="panel-h"><h3>คำขอปรับปรุงยอด / ตัดจำหน่าย<span class="desc">ผลต่างจากการตรวจนับอนุมัติที่เมนู “ตรวจนับสต็อก”</span></h3>${can('REQUEST_ADJUST') ? `<button class="btn primary" id="ad-new">${ic('plus')}ขอปรับปรุงยอด</button>` : ''}</div>
+  <div class="panel-b"><div class="toolbar"><div class="field"><label>สถานะ</label><select class="input" id="ad-st"><option value="PendingApproval">รออนุมัติ</option><option value="Approved">อนุมัติแล้ว</option><option value="Rejected">ไม่อนุมัติ</option><option value="">ทั้งหมด</option></select></div></div></div><div id="ad-table"></div></div>`;
+  const load = async () => {
+    $('#ad-table').innerHTML = loadingHtml();
+    try {
+      const rows = await api('getAdjustments', { status: $('#ad-st').value });
+      renderTable($('#ad-table'), { rows, emptyTitle: 'ไม่มีคำขอ', columns: [
+        { label: 'เลขที่', render: a => `<b>${esc(a.AdjustmentNo)}</b><div class="muted">${fmtDateTime(a.RequestedAt)}</div>` }, { label: 'ประเภท', key: 'TypeLabel' },
+        { label: 'เวชภัณฑ์ / ล็อต', render: a => `<b>${esc(a.ItemCode)}</b> ${esc(a.ItemName)}<div class="muted">ล็อต ${esc(a.LotNo)} · คงเหลือขณะนี้ ${fmtNum(a.CurrentOnHand)}</div>` },
+        { label: 'จำนวน', num: true, render: a => fmtNum(a.Qty) + ' ' + esc(a.BaseUnit || '') }, { label: 'เหตุผล', render: a => esc(a.Reason) + (a.RejectReason ? `<div class="muted" style="color:var(--danger)">${esc(a.RejectReason)}</div>` : '') },
+        { label: 'ผู้ขอ / ผู้อนุมัติ', render: a => esc(a.RequestedByName) + (a.ApprovedByName ? `<div class="muted">${esc(a.ApprovedByName)}</div>` : '') }, { label: 'สถานะ', render: a => badge(a.Status) },
+        { label: '', render: a => a.Status === 'PendingApproval' && can('APPROVE_ADJUST') && !(S.config.separationOfDuties && a.RequestedBy === S.user.UserID) ? `<div style="display:flex;gap:4px"><button class="btn sm primary" data-ap="${a.AdjustmentID}">อนุมัติ</button><button class="btn sm danger" data-rj="${a.AdjustmentID}">ไม่อนุมัติ</button></div>` : '' }],
+        after: c => {
+          $$('[data-ap]', c).forEach(b => b.onclick = async () => { if (await confirmBox('อนุมัติปรับปรุงยอด', 'ระบบจะบันทึกธุรกรรมและเปลี่ยนยอดคลังทันที')) withBtn(b, async () => { await api('approveStockAdjustment', { AdjustmentID: b.dataset.ap }, { mutate: true }); load(); }); });
+          $$('[data-rj]', c).forEach(b => b.onclick = async () => { const why = await confirmBox('ไม่อนุมัติ', '', { reason: true, danger: true, okLabel: 'ไม่อนุมัติ' }); if (why) withBtn(b, async () => { await api('rejectStockAdjustment', { AdjustmentID: b.dataset.rj, reason: why }, { mutate: true }); load(); }); });
+        } });
+    } catch (e) { if (!e.handled) $('#ad-table').innerHTML = errorHtml(e.message); }
+  };
+  $('#ad-st').onchange = load;
+  if ($('#ad-new')) $('#ad-new').onclick = () => adjustmentForm(null, load);
+  load();
+}
+</script>
+
+<script>
+/* ============================ Stock Counts ============================ */
+PAGES.counts = async (el) => {
+  await loadMaster();
+  el.innerHTML = `<div class="panel"><div class="panel-h"><h3>ตรวจนับสต็อก<span class="desc">ระบบบันทึกยอด ณ เวลาสร้างรอบ (Snapshot) แล้วเปรียบเทียบกับยอดนับจริง — ผลต่างจะปรับยอดเมื่อได้รับอนุมัติเท่านั้น</span></h3>${can('STOCK_COUNT') ? `<button class="btn primary" id="sc-new">${ic('plus')}สร้างรอบตรวจนับ</button>` : ''}</div>
+  <div class="panel-b"><div class="toolbar"><div class="field"><label>สถานะ</label><select class="input" id="sc-st"><option value="">ทั้งหมด</option>${['Open', 'Submitted', 'Approved', 'Rejected', 'Cancelled'].map(s => `<option value="${s}">${STATUS_TH[s][0]}</option>`).join('')}</select></div></div></div><div id="sc-table"></div></div>`;
+  const load = async () => {
+    $('#sc-table').innerHTML = loadingHtml();
+    try {
+      const rows = await api('getStockCounts', { status: $('#sc-st').value });
+      renderTable($('#sc-table'), { rows, emptyTitle: 'ยังไม่มีรอบตรวจนับ', onRow: c => openCount(c.CountID), columns: [{ label: 'รอบ', render: c => `<b>${esc(c.CountNo)}</b>` }, { label: 'วันที่ตรวจนับ', render: c => fmtDate(c.CountDate) }, { label: 'ขอบเขต', render: c => ({ ALL: 'ทุกรายการ', CATEGORY: 'ตามหมวดหมู่', ITEMS: 'เลือกรายการ' }[c.Scope] || c.Scope) }, { label: 'นับแล้ว', num: true, render: c => `${fmtNum(c.CountedLines)} / ${fmtNum(c.LineCount)}` }, { label: 'มีผลต่าง', num: true, render: c => c.VarianceLines ? `<span class="badge b-orange">${fmtNum(c.VarianceLines)}</span>` : '0' }, { label: 'ผู้สร้าง', key: 'CreatedByName' }, { label: 'สถานะ', render: c => badge(c.Status) }] });
+    } catch (e) { if (!e.handled) $('#sc-table').innerHTML = errorHtml(e.message); }
+  };
+  $('#sc-st').onchange = load;
+  if ($('#sc-new')) $('#sc-new').onclick = () => {
+    const items = (S.items || []).filter(i => i.Stock && i.Stock.OnHand);
+    const m = openModal({ title: 'สร้างรอบตรวจนับ', body: `<div class="grid g2"><div class="field"><label>วันที่ตรวจนับ <span class="req">*</span></label><input class="input" type="date" name="CountDate" value="${todayIso()}"></div>
+      <div class="field"><label>ขอบเขต</label><select class="input" name="Scope"><option value="ALL">ทุกรายการที่มียอดคงเหลือ</option><option value="CATEGORY">ตามหมวดหมู่</option><option value="ITEMS">เลือกรายการ</option></select></div>
+      <div class="field spanall hidden" id="sc-cat"><label>หมวดหมู่</label><select class="input" name="CategoryID">${optionList(S.categories || [], 'CategoryID', c => c.CategoryName, '', '— เลือก —')}</select></div>
+      <div class="field spanall hidden" id="sc-items"><label>เลือกรายการ (${items.length} รายการที่มียอด)</label><input class="input sm" id="sc-iq" placeholder="ค้นหา…"><div style="max-height:240px;overflow:auto;border:1px solid var(--line);border-radius:10px;padding:8px;margin-top:6px">${items.map(i => `<label class="check" data-lbl="${esc((i.ItemCode + ' ' + i.ItemName).toLowerCase())}"><input type="checkbox" value="${esc(i.ItemID)}"> ${esc(itemLabel(i))}</label>`).join('') || '<div class="muted">ไม่มีรายการที่มียอดคงเหลือ</div>'}</div></div>
+      <div class="field spanall"><label>หมายเหตุ</label><input class="input" name="Note" maxlength="500"></div></div>`,
+      buttons: [{ label: 'ยกเลิก', onClick: (b, mm) => mm.close() }, { label: 'สร้างรอบตรวจนับ', cls: 'primary', onClick: (btn, mm) => {
+        const f = formData(mm.el);
+        const ItemIDs = $$('#sc-items input[type=checkbox]:checked', mm.el).map(x => x.value);
+        if (f.Scope === 'CATEGORY' && !f.CategoryID) return toast('เลือกหมวดหมู่', 'warn');
+        if (f.Scope === 'ITEMS' && !ItemIDs.length) return toast('เลือกรายการอย่างน้อย 1 รายการ', 'warn');
+        withBtn(btn, async () => { const c = await api('createStockCount', { ...f, ItemIDs }, { mutate: true }); mm.close(); load(); openCount(c.CountID); });
+      } }] });
+    $('[name=Scope]', m.el).onchange = e => { $('#sc-cat', m.el).classList.toggle('hidden', e.target.value !== 'CATEGORY'); $('#sc-items', m.el).classList.toggle('hidden', e.target.value !== 'ITEMS'); };
+    $('#sc-iq', m.el).oninput = e => { const q = e.target.value.toLowerCase(); $$('[data-lbl]', m.el).forEach(l => l.classList.toggle('hidden', !l.dataset.lbl.includes(q))); };
+  };
+  load();
+};
+
+async function openCount(id) {
+  const tmp = openModal({ title: 'รอบตรวจนับ', size: 'xl', body: loadingHtml(), footer: false });
+  let c;
+  try { c = await api('getStockCount', { CountID: id }); } catch (e) { tmp.body.innerHTML = errorHtml(e.message); return; }
+  tmp.close();
+  const editable = c.Status === 'Open' && can('STOCK_COUNT');
+  const reload = (mm) => { mm.close(); refreshPage('counts'); openCount(id); };
+  const lines = () => $$('tr[data-d]', m.el).map(tr => ({ CountDetailID: tr.dataset.d, CountedQty: $('[data-c]', tr).value, Reason: $('[data-r]', tr).value }));
+  const acts = [];
+  if ((c.Status === 'Open' || c.Status === 'Submitted') && can('STOCK_COUNT')) acts.push({ label: 'ยกเลิกรอบ', cls: 'danger', onClick: async (btn, mm) => { const why = await confirmBox('ยกเลิกรอบตรวจนับ', '', { reason: true, danger: true, okLabel: 'ยกเลิกรอบ' }); if (why) withBtn(btn, async () => { await api('cancelStockCount', { CountID: id, reason: why }, { mutate: true }); reload(mm); }); } });
+  acts.push({ label: 'พิมพ์', icon: 'printer', onClick: () => printCount(c) });
+  if (can('STOCK_COUNT') && c.Status !== 'Cancelled') acts.push({ label: 'แนบหลักฐาน', icon: 'paperclip', onClick: (b, mm) => attachDoc('StockCount', id, () => openCount(id), mm) });
+  if (editable) {
+    acts.push({ label: 'บันทึกผล', icon: 'check', onClick: (btn, mm) => withBtn(btn, async () => { await api('saveStockCountResults', { CountID: id, lines: lines() }, { mutate: true }); reload(mm); }) });
+    acts.push({ label: 'บันทึกและส่งขออนุมัติ', cls: 'primary', onClick: async (btn, mm) => {
+      const ls = lines();
+      if (ls.some(l => l.CountedQty === '')) return toast('กรอกยอดนับจริงให้ครบทุกบรรทัด', 'warn');
+      const bad = $$('tr[data-d]', mm.el).filter(tr => Number($('[data-c]', tr).value) !== Number(tr.dataset.sys) && !$('[data-r]', tr).value.trim());
+      if (bad.length) { bad.forEach(tr => $('[data-r]', tr).classList.add('invalid')); return toast('ระบุสาเหตุของบรรทัดที่มีผลต่าง', 'warn'); }
+      if (!await confirmBox('ส่งผลตรวจนับ', 'หลังส่งแล้วจะแก้ไขยอดนับไม่ได้ และผลต่างจะรอผู้มีสิทธิ์อนุมัติ')) return;
+      withBtn(btn, async () => { await api('saveStockCountResults', { CountID: id, lines: ls }, { mutate: true, toast: false }); await api('submitStockCount', { CountID: id }, { mutate: true }); reload(mm); });
+    } });
+  }
+  const own = (c.SubmittedByName && c.SubmittedByName === (S.user.FullName || S.user.Username));
+  if (c.Status === 'Submitted' && can('APPROVE_ADJUST')) {
+    acts.push({ label: 'ไม่อนุมัติ', cls: 'danger', onClick: async (btn, mm) => { const why = await confirmBox('ไม่อนุมัติผลตรวจนับ', '', { reason: true, danger: true, okLabel: 'ไม่อนุมัติ' }); if (why) withBtn(btn, async () => { await api('rejectStockAdjustment', { CountID: id, reason: why }, { mutate: true }); reload(mm); }); } });
+    acts.push({ label: 'อนุมัติและปรับยอด', cls: 'primary', icon: 'check', onClick: async (btn, mm) => { if (await confirmBox('อนุมัติผลตรวจนับ', `ระบบจะบันทึกธุรกรรมปรับเพิ่ม/ลดตามผลต่าง ${c.VarianceLines} บรรทัด`)) withBtn(btn, async () => { await api('approveStockAdjustment', { CountID: id }, { mutate: true }); reload(mm); }); } });
+  }
+  const moved = c.lines.some(l => l.MovedSinceSnapshot);
+  const m = openModal({ title: `รอบตรวจนับ ${c.CountNo}`, size: 'xl', buttons: acts,
+    body: `<div class="kv"><div><small>สถานะ</small><b>${badge(c.Status)}</b></div><div><small>วันที่ตรวจนับ</small><b>${fmtDate(c.CountDate)}</b></div><div><small>Snapshot ยอดระบบ</small><b>${fmtDateTime(c.SnapshotAt)}</b></div><div><small>ผู้สร้าง</small><b>${esc(c.CreatedByName)}</b></div>${c.SubmittedAt ? `<div><small>ส่งโดย</small><b>${esc(c.SubmittedByName)} · ${fmtDateTime(c.SubmittedAt)}</b></div>` : ''}${c.ApprovedAt ? `<div><small>${c.Status === 'Rejected' ? 'ไม่อนุมัติโดย' : 'อนุมัติโดย'}</small><b>${esc(c.ApprovedByName)} · ${fmtDateTime(c.ApprovedAt)}</b></div>` : ''}${c.RejectReason ? `<div><small>เหตุผล</small><b>${esc(c.RejectReason)}</b></div>` : ''}</div>
+    ${moved ? `<div class="alert warn">${ic('alert')}<div>มีบางล็อตเคลื่อนไหวหลังเวลา Snapshot (ทำเครื่องหมาย ⚠) — ผลต่างคำนวณจากยอด ณ Snapshot ควรนับให้สอดคล้องกับเวลาดังกล่าว หรือสร้างรอบใหม่</div></div>` : ''}
+    ${editable ? `<div style="margin-bottom:10px"><button class="btn sm" id="sc-fill">กรอกยอดเท่ายอดระบบในช่องที่ว่าง</button></div>` : ''}
+    <div class="table-wrap"><table class="tbl"><thead><tr><th>เวชภัณฑ์</th><th>ล็อต / หมดอายุ</th><th>ที่เก็บ</th><th class="num">ยอดระบบ</th><th class="num">ยอดนับจริง</th><th class="num">ผลต่าง</th><th>สาเหตุ</th></tr></thead><tbody>
+    ${c.lines.map(l => `<tr data-d="${l.CountDetailID}" data-sys="${l.SystemQty}"><td><b>${esc(l.ItemCode)}</b> ${esc(l.ItemName)}<div class="muted">${esc(l.BaseUnit)}</div></td><td>${esc(l.LotNo)}${l.MovedSinceSnapshot ? ' ⚠' : ''}<div class="muted">${fmtDate(l.ExpiryDate)} · ${esc(STATUS_TH[l.LotStatus] ? STATUS_TH[l.LotStatus][0] : '')}</div></td><td>${esc(l.StorageLocation)}</td><td class="num">${fmtNum(l.SystemQty)}</td>
+      <td class="num">${editable ? `<input class="input sm" style="max-width:110px;margin-left:auto" type="number" min="0" step="any" data-c value="${l.CountedQty === null ? '' : l.CountedQty}">` : `<input type="hidden" data-c value="${l.CountedQty ?? ''}">${l.CountedQty === null ? '-' : fmtNum(l.CountedQty)}`}</td>
+      <td class="num" data-v>${l.Variance === null ? '-' : `<b style="color:${l.Variance < 0 ? 'var(--danger)' : l.Variance > 0 ? 'var(--emerald-d)' : 'inherit'}">${l.Variance > 0 ? '+' : ''}${fmtNum(l.Variance)}</b>`}</td>
+      <td>${editable ? `<input class="input sm" data-r maxlength="300" value="${esc(l.Reason || '')}" placeholder="ระบุเมื่อมีผลต่าง">` : `<input type="hidden" data-r value="${esc(l.Reason || '')}">${esc(l.Reason || '')}`}</td></tr>`).join('')}</tbody></table></div>${docsHtml(c.documents)}` });
+  if (editable) {
+    $$('[data-c]', m.el).forEach(inp => inp.addEventListener('input', () => { const tr = inp.closest('tr'); const v = inp.value === '' ? null : Number(inp.value) - Number(tr.dataset.sys); $('[data-v]', tr).innerHTML = v === null ? '-' : `<b style="color:${v < 0 ? 'var(--danger)' : v > 0 ? 'var(--emerald-d)' : 'inherit'}">${v > 0 ? '+' : ''}${fmtNum(v)}</b>`; }));
+    $('#sc-fill', m.el).onclick = () => $$('tr[data-d]', m.el).forEach(tr => { const i = $('[data-c]', tr); if (i.value === '') { i.value = tr.dataset.sys; i.dispatchEvent(new Event('input')); } });
+  }
+}
+
+function printCount(c) {
+  printDoc('รายงานผลการตรวจนับสต็อก', `<p>รอบ <b>${esc(c.CountNo)}</b> · วันที่ ${fmtDate(c.CountDate)} · Snapshot ${fmtDateTime(c.SnapshotAt)} · สถานะ ${esc((STATUS_TH[c.Status] || [c.Status])[0])}</p>
+  <table><thead><tr><th>รหัส</th><th>รายการ</th><th>ล็อต</th><th>หมดอายุ</th><th>หน่วย</th><th class="num">ยอดระบบ</th><th class="num">นับจริง</th><th class="num">ผลต่าง</th><th class="num">มูลค่าผลต่าง</th><th>สาเหตุ</th></tr></thead><tbody>${c.lines.map(l => `<tr><td>${esc(l.ItemCode)}</td><td>${esc(l.ItemName)}</td><td>${esc(l.LotNo)}</td><td>${fmtDate(l.ExpiryDate)}</td><td>${esc(l.BaseUnit)}</td><td class="num">${fmtNum(l.SystemQty)}</td><td class="num">${l.CountedQty === null ? '' : fmtNum(l.CountedQty)}</td><td class="num">${l.Variance === null ? '' : fmtNum(l.Variance)}</td><td class="num">${l.Variance === null ? '' : fmtMoney(l.Variance * l.UnitCost)}</td><td>${esc(l.Reason || '')}</td></tr>`).join('')}</tbody></table>`, { signs: ['ผู้ตรวจนับ', 'ผู้ตรวจสอบ', 'ผู้อนุมัติ'] });
+}
+
+/* ============================ Notifications ============================ */
+PAGES.notifications = async (el) => {
+  el.innerHTML = `<div class="panel"><div class="panel-h"><h3>การแจ้งเตือน<span class="desc">คำนวณจากข้อมูลจริงทุกครั้งที่เปิด (ทุก 2 นาที) · ล็อตหมดอายุถูกระงับการจ่ายโดยอัตโนมัติ ไม่ใช่เพียงการแจ้งเตือน</span></h3>
+  <select class="input" id="nt-type" style="max-width:220px"><option value="">ทุกประเภท</option>${['LOW_STOCK', 'NEAR_EXPIRY', 'EXPIRED', 'PENDING_APPROVAL', 'PENDING_RECEIPT', 'PARTIAL_ISSUE', 'DAMAGED', 'COUNT_VARIANCE', 'HIGH_USAGE'].map(t => `<option value="${t}">${{ LOW_STOCK: 'ต่ำกว่าจุดสั่งซื้อ', NEAR_EXPIRY: 'ใกล้หมดอายุ', EXPIRED: 'หมดอายุแล้ว', PENDING_APPROVAL: 'รออนุมัติ', PENDING_RECEIPT: 'รอตรวจรับ', PARTIAL_ISSUE: 'จ่ายไม่ครบ', DAMAGED: 'ของชำรุด/กักกัน', COUNT_VARIANCE: 'ผลต่างตรวจนับ', HIGH_USAGE: 'ใช้สูงผิดปกติ' }[t]}</option>`).join('')}</select>
+  <label class="check"><input type="checkbox" id="nt-unread"> ยังไม่อ่าน</label><button class="btn" id="nt-all">${ic('check')}อ่านทั้งหมด</button></div><div id="nt-list">${loadingHtml()}</div></div>`;
+  let data = [];
+  const draw = () => {
+    const rows = data.filter(n => !$('#nt-unread').checked || !n.IsRead);
+    $('#nt-list').innerHTML = rows.length ? rows.map(n => `<div class="notif ${n.IsRead ? '' : 'unread'}" data-id="${n.NotificationID}"><span class="sev sev-${esc(n.Severity)}"></span><div style="flex:1;min-width:0"><div class="t">${esc(n.Title)} ${badge(n.Severity)} <span class="badge b-gray">${esc(n.TypeLabel)}</span></div><div class="m">${esc(n.Message)}</div><div class="m" style="font-size:12.5px">${n.RelatedDate ? 'วันที่เกี่ยวข้อง ' + fmtDate(n.RelatedDate) + ' · ' : ''}แจ้งเมื่อ ${fmtDateTime(n.CreatedAt)}</div></div>${n.IsRead ? '' : '<span class="badge b-blue">ใหม่</span>'}</div>`).join('') : emptyHtml('ไม่มีการแจ้งเตือน', 'ทุกอย่างเรียบร้อยดี', 'bell');
+    $$('.notif', $('#nt-list')).forEach(d => d.onclick = async () => {
+      const n = data.find(x => x.NotificationID === d.dataset.id);
+      if (!n.IsRead) { n.IsRead = true; rawApi('markNotificationRead', { NotificationID: n.NotificationID }, uid()).then(refreshBell); draw(); }
+      openEntity(n.EntityType, n.EntityID, n);
+    });
+  };
+  const load = async () => { $('#nt-list').innerHTML = loadingHtml(); try { const d = await api('getNotifications', { type: $('#nt-type').value }); data = d.items; draw(); refreshBell(); } catch (e) { if (!e.handled) $('#nt-list').innerHTML = errorHtml(e.message); } };
+  $('#nt-type').onchange = load; $('#nt-unread').onchange = draw;
+  $('#nt-all').onclick = () => withBtn($('#nt-all'), async () => { await api('markNotificationRead', { all: true }, { mutate: true }); load(); });
+  load();
+};
+
+function openEntity(type, id, n) {
+  if (type === 'Requisition') return openRequisition(id);
+  if (type === 'Receipt' && can('VIEW_RECEIPTS')) return openReceipt(id);
+  if (type === 'StockCount') return openCount(id);
+  if (type === 'Adjustment') return navigate('stock', { tab: 'adjust' });
+  if (type === 'Item' || type === 'Lot') { const code = (n.Title || '').split(' ')[0]; return navigate('stock', { tab: type === 'Lot' ? 'lots' : 'items', search: code }); }
+}
+
+/* ============================ Reports ============================ */
+PAGES.reports = async (el) => {
+  await loadMaster();
+  const cat = await api('getReports');
+  el.innerHTML = `<div class="panel"><div class="panel-h"><h3>รายงาน<span class="desc">ข้อมูลจริงจาก Google Sheets · ส่งออก CSV (เปิดใน Excel ได้ ภาษาไทยไม่เพี้ยน) · พิมพ์/บันทึก PDF ผ่านหน้าพิมพ์ของเบราว์เซอร์</span></h3></div>
+  <div class="panel-b"><div class="toolbar"><div class="field grow"><label>เลือกรายงาน</label><select class="input" id="rp-id">${cat.map((r, i) => `<option value="${r.id}">${i + 1}. ${esc(r.title)}</option>`).join('')}</select></div></div>
+  <div class="toolbar" id="rp-filters"></div>
+  <div style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn blue" id="rp-run">${ic('chart')}แสดงรายงาน</button><button class="btn" id="rp-csv">${ic('download')}ส่งออก CSV</button><button class="btn" id="rp-print">${ic('printer')}พิมพ์ / PDF</button></div></div>
+  <div id="rp-out"></div></div>`;
+  const f30 = addDays(todayIso(), -30);
+  const drawFilters = () => {
+    const r = cat.find(x => x.id === $('#rp-id').value);
+    const F = r.filters;
+    $('#rp-filters').innerHTML = [
+      F.includes('date') ? `<div class="field"><label>ตั้งแต่วันที่</label><input class="input" type="date" name="dateFrom" value="${f30.substring(0, 8)}01"></div><div class="field"><label>ถึงวันที่</label><input class="input" type="date" name="dateTo" value="${todayIso()}"></div>` : '',
+      F.includes('category') ? `<div class="field"><label>หมวดหมู่</label><select class="input" name="categoryId">${optionList(S.categories || [], 'CategoryID', c => c.CategoryName, '', 'ทุกหมวดหมู่')}</select></div>` : '',
+      F.includes('item') ? `<div class="field grow"><label>เวชภัณฑ์</label><input class="input" name="itemLabel" list="rp-items" placeholder="ทุกรายการ">${itemDatalist('rp-items')}</div>` : '',
+      F.includes('status') ? `<div class="field"><label>สถานะ</label><select class="input" name="status"><option value="">ทั้งหมด</option>${(r.id === 'USER_ACTIVITY' ? ['SUCCESS', 'FAILED', 'DENIED', 'LOCKED'] : r.id === 'RECEIPTS' ? ['Confirmed', 'Reversed', 'Draft', 'Cancelled'] : r.id === 'STOCK_COUNT' ? ['Open', 'Submitted', 'Approved', 'Rejected'] : ['PendingApproval', 'Approved', 'PartiallyIssued', 'Draft', 'Open', 'Submitted']).map(s => `<option value="${s}">${STATUS_TH[s] ? STATUS_TH[s][0] : s}</option>`).join('')}</select></div>` : '',
+      F.includes('source') ? `<div class="field"><label>แหล่งรับ</label><select class="input" name="sourceId">${optionList(S.suppliers || [], 'SupplierID', s => s.SupplierName, '', 'ทุกแหล่ง')}</select></div>` : '',
+      F.includes('docNo') ? `<div class="field"><label>เลขที่เอกสาร</label><input class="input" name="docNo"></div>` : '',
+      F.includes('search') ? `<div class="field grow"><label>ค้นหา</label><input class="input" name="search"></div>` : '',
+      F.includes('days') ? `<div class="field"><label>ภายใน (วัน)</label><input class="input" type="number" name="days" min="1" value="${S.config.expiryWarningDays || 90}"></div>` : ''
+    ].join('');
+    $('#rp-out').innerHTML = '';
+  };
+  const params = () => {
+    const p = formData($('#rp-filters'));
+    if (p.itemLabel) { const it = findItemByLabel(p.itemLabel); if (!it) throw new Error('ไม่พบเวชภัณฑ์ที่ระบุ'); p.itemId = it.ItemID; }
+    delete p.itemLabel;
+    if (p.dateFrom && p.dateTo && p.dateFrom > p.dateTo) throw new Error('ช่วงวันที่ไม่ถูกต้อง');
+    return { reportId: $('#rp-id').value, ...p };
+  };
+  let last = null;
+  const cell = (c, v) => c.type === 'money' ? fmtMoney(v) : c.type === 'num' ? fmtNum(v) : c.type === 'date' ? fmtDate(v) : esc(v);
+  $('#rp-id').onchange = drawFilters;
+  $('#rp-run').onclick = () => withBtn($('#rp-run'), async () => {
+    const r = await api('getReports', params());
+    last = r;
+    $('#rp-out').innerHTML = `<div class="panel-b" style="border-top:1px solid var(--line)"><h3 style="font-size:16px">${esc(r.title)}</h3><div class="muted" style="color:var(--muted);font-size:13px">${esc(r.meta.org)} · ${r.meta.range ? `ช่วง ${fmtDate(r.meta.range.from)} – ${fmtDate(r.meta.range.to)} · ` : ''}จัดทำ ${fmtDateTime(r.meta.generatedAt)} โดย ${esc(r.meta.generatedBy)} · ${fmtNum(r.rowCount)} แถว</div>${r.notes.map(n => `<div class="alert info" style="margin:8px 0 0">${ic('alert')}<div>${esc(n)}</div></div>`).join('')}</div><div id="rp-table"></div>`;
+    const totals = Object.keys(r.totals).length ? r.columns.map((c, i) => `<td class="${c.type === 'money' || c.type === 'num' ? 'num' : ''}">${i === 0 ? 'รวม' : r.totals[c.key] !== undefined ? cell(c, r.totals[c.key]) : ''}</td>`).join('') : '';
+    renderTable($('#rp-table'), { rows: r.rows, pageSize: 100, emptyTitle: 'ไม่พบข้อมูลตามเงื่อนไข', emptyText: 'ลองปรับช่วงวันที่หรือตัวกรอง', footer: totals, columns: r.columns.map(c => ({ label: c.label, num: c.type === 'money' || c.type === 'num', render: row => cell(c, row[c.key]) })) });
+  });
+  $('#rp-csv').onclick = () => withBtn($('#rp-csv'), async () => { const f = await api('exportReport', params()); downloadText(f.fileName, f.content, f.mimeType); toast('ส่งออก ' + f.fileName + ' แล้ว', 'ok'); });
+  $('#rp-print').onclick = () => withBtn($('#rp-print'), async () => {
+    const r = last && last.id === $('#rp-id').value ? last : await api('getReports', params());
+    const totals = Object.keys(r.totals).length ? `<tfoot><tr>${r.columns.map((c, i) => `<td class="${c.type === 'money' || c.type === 'num' ? 'num' : ''}"><b>${i === 0 ? 'รวม' : r.totals[c.key] !== undefined ? cell(c, r.totals[c.key]) : ''}</b></td>`).join('')}</tr></tfoot>` : '';
+    printDoc(r.title, `${r.meta.range ? `<p style="text-align:center">ช่วงวันที่ ${fmtDate(r.meta.range.from)} – ${fmtDate(r.meta.range.to)}</p>` : ''}<table><thead><tr>${r.columns.map(c => `<th class="${c.type === 'money' || c.type === 'num' ? 'num' : ''}">${esc(c.label)}</th>`).join('')}</tr></thead><tbody>${r.rows.map(row => `<tr>${r.columns.map(c => `<td class="${c.type === 'money' || c.type === 'num' ? 'num' : ''}">${cell(c, row[c.key])}</td>`).join('')}</tr>`).join('') || `<tr><td colspan="${r.columns.length}">ไม่พบข้อมูล</td></tr>`}</tbody>${totals}</table>${r.notes.map(n => `<p style="font-size:11px">หมายเหตุ: ${esc(n)}</p>`).join('')}`);
+  });
+  drawFilters();
+};
+
+/* ============================ Users ============================ */
+PAGES.users = async (el) => {
+  const d = await api('manageUsers', { op: 'list' });
+  const depts = S.config.departments || [];
+  el.innerHTML = `<div class="panel"><div class="panel-h"><h3>ผู้ใช้งานระบบ<span class="desc">รหัสผ่านเก็บเป็น Hash + Salt · รหัสชั่วคราวแสดงครั้งเดียวและผู้ใช้ต้องเปลี่ยนเมื่อเข้าสู่ระบบ</span></h3><button class="btn primary" id="us-new">${ic('plus')}เพิ่มผู้ใช้</button></div><div id="us-table"></div></div>
+  <div class="panel"><div class="panel-h"><h3>สิทธิ์ตามบทบาท</h3></div><div class="panel-b flush"><div class="table-wrap"><table class="tbl"><thead><tr><th>สิทธิ์</th>${Object.keys(d.roles).map(r => `<th>${esc(d.roles[r])}</th>`).join('')}</tr></thead><tbody>${Object.keys(d.permissions).map(p => `<tr><td>${esc(d.permissions[p])}</td>${Object.keys(d.roles).map(r => `<td style="text-align:center">${d.rolePermissions[r].includes(p) ? `<span style="color:var(--emerald-d)">${ic('check')}</span>` : '<span class="muted">–</span>'}</td>`).join('')}</tr>`).join('')}</tbody></table></div></div></div>`;
+  const showTemp = (pw, who) => openModal({ title: 'รหัสผ่านชั่วคราว', size: 'sm', body: `<div class="alert warn">${ic('key')}<div>แจ้งรหัสนี้แก่ <b>${esc(who)}</b> ด้วยช่องทางที่ปลอดภัย ระบบจะไม่แสดงซ้ำ และผู้ใช้ต้องเปลี่ยนรหัสเมื่อเข้าสู่ระบบ</div></div><div style="font-family:monospace;font-size:24px;text-align:center;letter-spacing:2px;padding:12px;background:var(--gray-l);border-radius:10px;user-select:all">${esc(pw)}</div>` });
+  const form = (u) => {
+    const x = u || { Role: 'STAFF', IsActive: true };
+    openModal({ title: u ? 'แก้ไขผู้ใช้ ' + u.Username : 'เพิ่มผู้ใช้', body: `<div class="grid g2">
+      <div class="field"><label>ชื่อผู้ใช้ <span class="req">*</span></label><input class="input" name="Username" maxlength="30" value="${esc(x.Username)}" ${u ? 'readonly' : ''} placeholder="a-z 0-9 . _ -"></div>
+      <div class="field"><label>ชื่อ-สกุล <span class="req">*</span></label><input class="input" name="FullName" maxlength="150" value="${esc(x.FullName)}"></div>
+      <div class="field"><label>บทบาท <span class="req">*</span></label><select class="input" name="Role">${Object.keys(d.roles).map(r => `<option value="${r}" ${r === x.Role ? 'selected' : ''}>${esc(d.roles[r])} (${r})</option>`).join('')}</select></div>
+      <div class="field"><label>หน่วยงาน</label><input class="input" name="Department" list="us-dept" value="${esc(x.Department)}"><datalist id="us-dept">${depts.map(z => `<option value="${esc(z)}">`).join('')}</datalist></div>
+      <div class="field"><label>อีเมล</label><input class="input" name="Email" type="email" maxlength="120" value="${esc(x.Email)}"></div>
+      ${u ? `<div class="field" style="justify-content:flex-end"><label class="check"><input type="checkbox" name="IsActive" ${x.IsActive ? 'checked' : ''}> เปิดใช้งาน</label></div>` : '<div class="field"><label>รหัสผ่านเริ่มต้น</label><input class="input" name="Password" type="password" autocomplete="new-password" placeholder="ว่าง = ระบบสร้างให้"></div>'}</div>`,
+      buttons: [{ label: 'ยกเลิก', onClick: (b, m) => m.close() }, { label: 'บันทึก', cls: 'primary', onClick: (btn, m) => {
+        if (!requireFields(m.el, ['Username', 'FullName', 'Role'])) return;
+        const f = formData(m.el);
+        if (!u && !/^[a-z0-9._-]{3,30}$/.test(f.Username.toLowerCase())) return toast('ชื่อผู้ใช้ใช้ได้เฉพาะ a-z 0-9 . _ - (3–30 ตัว)', 'warn');
+        withBtn(btn, async () => {
+          const r = await api('manageUsers', u ? { op: 'update', UserID: u.UserID, FullName: f.FullName, Role: f.Role, Department: f.Department, Email: f.Email, IsActive: f.IsActive } : { op: 'create', ...f }, { mutate: true });
+          m.close(); await navigate('users'); if (r.tempPassword) showTemp(r.tempPassword, r.user.Username);
+        });
+      } }] });
+  };
+  $('#us-new').onclick = () => form(null);
+  renderTable($('#us-table'), { rows: d.users, columns: [
+    { label: 'ผู้ใช้', render: u => `<b>${esc(u.FullName)}</b><div class="muted">${esc(u.Username)}${u.Email ? ' · ' + esc(u.Email) : ''}</div>` }, { label: 'บทบาท', render: u => `<span class="badge b-navy">${esc(u.RoleName)}</span>` }, { label: 'หน่วยงาน', key: 'Department' },
+    { label: 'เข้าสู่ระบบล่าสุด', render: u => fmtDateTime(u.LastLoginAt) || '<span class="muted">ยังไม่เคย</span>' },
+    { label: 'สถานะ', render: u => (u.IsActive ? badge('ACTIVE') : '<span class="badge b-gray">ปิดใช้งาน</span>') + (u.LockedUntil && u.LockedUntil > localNowIso() ? ' <span class="badge b-orange">ถูกล็อก</span>' : '') + (u.MustChangePassword ? ' <span class="badge b-warn">ต้องเปลี่ยนรหัส</span>' : '') },
+    { label: '', render: u => `<div style="display:flex;gap:4px;justify-content:flex-end;flex-wrap:wrap"><button class="btn sm" data-ed="${u.UserID}">${ic('edit')}แก้ไข</button><button class="btn sm" data-rs="${u.UserID}">${ic('key')}รีเซ็ตรหัส</button>${u.LockedUntil && u.LockedUntil > localNowIso() ? `<button class="btn sm" data-ul="${u.UserID}">ปลดล็อก</button>` : ''}<button class="btn sm" data-rv="${u.UserID}" title="บังคับออกจากระบบทุกอุปกรณ์">${ic('logout')}</button></div>` }],
+    after: c => {
+      const find = id => d.users.find(u => u.UserID === id);
+      $$('[data-ed]', c).forEach(b => b.onclick = () => form(find(b.dataset.ed)));
+      $$('[data-rs]', c).forEach(b => b.onclick = async () => { const u = find(b.dataset.rs); if (await confirmBox('รีเซ็ตรหัสผ่าน', `สร้างรหัสชั่วคราวใหม่ให้ <b>${esc(u.Username)}</b> และยกเลิก Session เดิมทั้งหมด`)) withBtn(b, async () => { const r = await api('manageUsers', { op: 'resetPassword', UserID: u.UserID }, { mutate: true }); showTemp(r.tempPassword, u.Username); }); });
+      $$('[data-ul]', c).forEach(b => b.onclick = () => withBtn(b, async () => { await api('manageUsers', { op: 'unlock', UserID: b.dataset.ul }, { mutate: true }); navigate('users'); }));
+      $$('[data-rv]', c).forEach(b => b.onclick = async () => { if (await confirmBox('บังคับออกจากระบบ', 'ยกเลิก Session ทั้งหมดของผู้ใช้นี้')) withBtn(b, async () => { await api('manageUsers', { op: 'revokeSessions', UserID: b.dataset.rv }, { mutate: true }); }); });
+    } });
+};
+
+/* ============================ Audit ============================ */
+PAGES.audit = async (el) => {
+  el.innerHTML = `<div class="panel"><div class="panel-h"><h3>ประวัติการใช้งาน (Audit Logs)<span class="desc">ไม่บันทึกรหัสผ่านหรือ Session Token</span></h3></div><div class="panel-b"><div class="toolbar">
+  <div class="field grow"><label>ค้นหา (ผู้ใช้/การดำเนินการ/รหัสข้อมูล/RequestID)</label><input class="input" id="au-q"></div>
+  <div class="field"><label>ผลลัพธ์</label><select class="input" id="au-r"><option value="">ทั้งหมด</option>${['SUCCESS', 'FAILED', 'DENIED', 'LOCKED', 'RATE_LIMITED'].map(s => `<option value="${s}">${STATUS_TH[s][0]}</option>`).join('')}</select></div>
+  <div class="field"><label>ตั้งแต่</label><input class="input" type="date" id="au-from" value="${addDays(todayIso(), -7)}"></div><div class="field"><label>ถึง</label><input class="input" type="date" id="au-to" value="${todayIso()}"></div>
+  <button class="btn blue" id="au-go">${ic('search')}ค้นหา</button></div></div><div id="au-table"></div></div>`;
+  const load = async () => {
+    $('#au-table').innerHTML = loadingHtml();
+    try {
+      const d = await api('getAuditLogs', { search: $('#au-q').value, result: $('#au-r').value, dateFrom: $('#au-from').value, dateTo: $('#au-to').value, limit: 2000 });
+      renderTable($('#au-table'), { rows: d.rows, pageSize: 100, emptyTitle: 'ไม่พบประวัติ', columns: [{ label: 'เวลา', render: l => fmtDateTime(l.Timestamp) }, { label: 'ผู้ใช้', key: 'UserName' }, { label: 'การดำเนินการ', render: l => `<b>${esc(l.Action)}</b>` }, { label: 'ข้อมูล', render: l => esc(l.EntityType) + `<div class="muted">${esc(l.EntityID)}</div>` }, { label: 'ผลลัพธ์', render: l => badge(l.Result) }, { label: 'รายละเอียด', render: l => esc(l.Reason) + `<div class="muted">${esc(l.RequestID)}</div>` }] });
+    } catch (e) { if (!e.handled) $('#au-table').innerHTML = errorHtml(e.message); }
+  };
+  $('#au-go').onclick = load; load();
+};
+
+/* ============================ Settings / Import / Backup ============================ */
+PAGES.settings = async (el, params) => {
+  const tab = params.tab || 'settings';
+  el.innerHTML = `<div class="tabs">${[['settings', 'ตั้งค่าระบบ'], ['import', 'นำเข้าทะเบียนจาก Excel'], ['system', 'สำรองข้อมูลและตรวจสอบระบบ']].map(t => `<button class="tab ${t[0] === tab ? 'active' : ''}" data-t="${t[0]}">${t[1]}</button>`).join('')}</div><div id="se-body">${loadingHtml()}</div>`;
+  $$('.tab', el).forEach(b => b.onclick = () => navigate('settings', { tab: b.dataset.t }));
+  const body = $('#se-body');
+  if (tab === 'settings') {
+    const list = await api('getSettings');
+    body.innerHTML = `<div class="panel"><div class="panel-h"><h3>ค่าตั้งค่า<span class="desc">เก็บในชีต Settings · ค่าความลับ (Pepper) เก็บใน Script Properties ไม่แสดงที่นี่</span></h3><button class="btn primary" id="se-save">${ic('check')}บันทึก</button></div><div class="panel-b"><div class="grid g2">${list.map(s => `<div class="field"><label>${esc(s.Description)} <span class="muted" style="font-weight:400;color:var(--muted)">(${esc(s.Key)})</span></label>${s.Key === 'SEPARATION_OF_DUTIES' ? `<select class="input" data-k="${s.Key}"><option value="TRUE" ${s.Value === 'TRUE' ? 'selected' : ''}>เปิด (ห้ามอนุมัติเอกสารของตนเอง)</option><option value="FALSE" ${s.Value !== 'TRUE' ? 'selected' : ''}>ปิด</option></select>` : /^SEVERITY_/.test(s.Key) ? `<select class="input" data-k="${s.Key}">${['LOW', 'MEDIUM', 'HIGH', 'CRITICAL'].map(v => `<option ${v === s.Value ? 'selected' : ''}>${v}</option>`).join('')}</select>` : `<input class="input" data-k="${s.Key}" value="${esc(s.Value)}" ${s.ReadOnly ? 'readonly' : ''}>`}</div>`).join('')}</div></div></div>`;
+    $('#se-save').onclick = () => withBtn($('#se-save'), async () => {
+      const settings = {}; list.forEach(s => { if (s.ReadOnly) return; const v = $(`[data-k="${s.Key}"]`, body).value.trim(); if (v !== String(s.Value)) settings[s.Key] = v; });
+      if (!Object.keys(settings).length) return toast('ไม่มีการเปลี่ยนแปลง', 'warn');
+      await api('saveSettings', { settings }, { mutate: true }); S.config = await api('getAppConfig'); navigate('settings');
+    });
+    return;
+  }
+  if (tab === 'import') {
+    await loadMaster(true);
+    const src = await api('getImportSources');
+    const FIELDS = [['ItemCode', 'รหัสเวชภัณฑ์', 1], ['ItemName', 'ชื่อเวชภัณฑ์', 1], ['BaseUnit', 'หน่วยพื้นฐาน', 1], ['Category', 'หมวดหมู่ (รหัสหรือชื่อ)'], ['Description', 'รายละเอียด'], ['PurchaseUnit', 'หน่วยจัดซื้อ'], ['ConversionFactor', 'อัตราแปลงหน่วย'], ['ReorderPoint', 'จุดสั่งซื้อ'], ['MaximumStock', 'ยอดสูงสุด'], ['DefaultStorageLocation', 'ที่จัดเก็บ'], ['UnitCost', 'ราคาต่อหน่วยพื้นฐาน']];
+    body.innerHTML = `<div class="panel"><div class="panel-h"><h3>นำเข้าทะเบียนเวชภัณฑ์จากชีตที่นำเข้าจาก Excel<span class="desc">ระบบอ่านอย่างเดียว ไม่แก้ไข/ลบชีตต้นทาง · ตรวจรหัสซ้ำ หน่วยนับ และข้อมูลที่ขาดก่อนนำเข้า · ควรทดลองกับสำเนาไฟล์ก่อน</span></h3></div><div class="panel-b">
+    ${src.length ? '' : `<div class="alert warn">${ic('alert')}<div>ไม่พบชีตอื่นนอกจากชีตระบบ — นำเข้า Excel เข้า Google Sheets ก่อน (File > Import > Insert new sheet) หรือใช้เมนู BN MedSupply > สร้างชีต Import Template</div></div>`}
+    <div class="grid g3"><div class="field"><label>ชีตต้นทาง</label><select class="input" id="im-sheet">${src.map(s => `<option value="${esc(s.sheetName)}">${esc(s.sheetName)} (${s.rows} แถว)</option>`).join('')}</select></div>
+    <div class="field"><label>หมวดหมู่เริ่มต้น (เมื่อไม่พบหมวด)</label><select class="input" id="im-defcat">${optionList(S.categories || [], 'CategoryID', c => c.CategoryName, '', '— ไม่กำหนด —')}</select></div>
+    <div class="field" style="justify-content:flex-end"><label class="check"><input type="checkbox" id="im-newcat"> สร้างหมวดหมู่ใหม่ที่ไม่พบอัตโนมัติ</label></div></div>
+    <div id="im-preview"></div><div class="section-title">${ic('move')}จับคู่หัวคอลัมน์</div><div class="grid g3" id="im-map"></div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:8px"><button class="btn blue" id="im-dry">${ic('search')}ตรวจสอบข้อมูล (ยังไม่นำเข้า)</button><button class="btn primary" id="im-go" disabled>${ic('upload')}นำเข้า</button><label class="check"><input type="checkbox" id="im-partial"> นำเข้าเฉพาะแถวที่ถูกต้อง</label></div><div id="im-result" style="margin-top:14px"></div></div></div>`;
+    const guess = (hdrs, f) => { const alias = { ItemCode: ['รหัส', 'code', 'itemcode', 'รหัสเวชภัณฑ์', 'รหัสวัสดุ'], ItemName: ['ชื่อ', 'name', 'รายการ', 'ชื่อเวชภัณฑ์', 'ชื่อวัสดุ'], BaseUnit: ['หน่วย', 'unit', 'หน่วยนับ', 'baseunit'], Category: ['หมวด', 'category', 'ประเภท'], Description: ['รายละเอียด', 'description', 'ขนาด'], PurchaseUnit: ['หน่วยจัดซื้อ', 'purchaseunit', 'หน่วยใหญ่'], ConversionFactor: ['อัตราแปลง', 'conversion', 'จำนวนต่อหน่วย', 'conversionfactor'], ReorderPoint: ['จุดสั่งซื้อ', 'reorder', 'min', 'reorderpoint'], MaximumStock: ['สูงสุด', 'max', 'maximumstock'], DefaultStorageLocation: ['ที่เก็บ', 'location', 'defaultstoragelocation'], UnitCost: ['ราคา', 'cost', 'price', 'unitcost', 'ราคาต่อหน่วย'] }[f] || [];
+      return hdrs.find(h => h.toLowerCase().replace(/\s/g, '') === f.toLowerCase()) || hdrs.find(h => alias.some(a => h.toLowerCase().replace(/\s/g, '').includes(a))) || ''; };
+    const drawMap = () => {
+      const s = src.find(x => x.sheetName === $('#im-sheet').value); if (!s) return;
+      $('#im-preview').innerHTML = `<div class="section-title">${ic('db')}ตัวอย่างข้อมูล 5 แถวแรก</div><div class="table-wrap" style="margin-bottom:12px"><table class="tbl"><thead><tr>${s.headers.map(h => `<th>${esc(h)}</th>`).join('')}</tr></thead><tbody>${s.preview.map(r => `<tr>${r.map(v => `<td>${esc(v)}</td>`).join('')}</tr>`).join('')}</tbody></table></div>`;
+      $('#im-map').innerHTML = FIELDS.map(f => `<div class="field"><label>${esc(f[1])}${f[2] ? ' <span class="req">*</span>' : ''}</label><select class="input" data-m="${f[0]}"><option value="">— ไม่ใช้ —</option>${s.headers.filter(Boolean).map(h => `<option ${h === guess(s.headers, f[0]) ? 'selected' : ''}>${esc(h)}</option>`).join('')}</select></div>`).join('');
+      $('#im-go').disabled = true; $('#im-result').innerHTML = '';
+    };
+    const payload = (dry) => { const mapping = {}; $$('[data-m]', body).forEach(s => { if (s.value) mapping[s.dataset.m] = s.value; }); return { sheetName: $('#im-sheet').value, mapping, defaultCategoryId: $('#im-defcat').value, createMissingCategories: $('#im-newcat').checked, allowPartial: $('#im-partial').checked, dryRun: dry }; };
+    const showRes = (r) => {
+      $('#im-result').innerHTML = `<div class="alert ${r.errors.length ? 'warn' : 'ok'}">${ic(r.errors.length ? 'alert' : 'check')}<div>${r.imported !== undefined ? `<b>นำเข้าแล้ว ${r.imported} รายการ</b><br>` : ''}ทั้งหมด ${r.totalRows} แถว · ถูกต้อง ${r.valid} · ผิดพลาด ${r.errors.length} · ซ้ำ (ข้าม) ${r.duplicates.length}${r.newCategories.length ? ` · หมวดหมู่ใหม่: ${r.newCategories.map(esc).join(', ')}` : ''}</div></div>
+      ${r.errors.length ? `<div class="section-title">แถวที่ผิดพลาด</div><div class="table-wrap"><table class="tbl"><thead><tr><th>แถว</th><th>รหัส</th><th>ปัญหา</th></tr></thead><tbody>${r.errors.slice(0, 200).map(e => `<tr><td>${e.row}</td><td>${esc(e.code)}</td><td>${esc(e.errors.join(', '))}</td></tr>`).join('')}</tbody></table></div>` : ''}
+      ${r.duplicates.length ? `<div class="section-title">รหัสซ้ำ (จะไม่นำเข้า)</div><div class="table-wrap"><table class="tbl"><thead><tr><th>แถว</th><th>รหัส</th><th>เหตุผล</th></tr></thead><tbody>${r.duplicates.slice(0, 200).map(e => `<tr><td>${e.row}</td><td>${esc(e.code)}</td><td>${esc(e.reason)}</td></tr>`).join('')}</tbody></table></div>` : ''}
+      ${r.preview.length && r.imported === undefined ? `<div class="section-title">ตัวอย่างรายการที่จะนำเข้า</div><div class="table-wrap"><table class="tbl"><thead><tr><th>แถว</th><th>รหัส</th><th>ชื่อ</th><th>หมวด</th><th>หน่วย</th><th>หน่วยจัดซื้อ</th></tr></thead><tbody>${r.preview.map(p => `<tr><td>${p.row}</td><td>${esc(p.ItemCode)}</td><td>${esc(p.ItemName)}</td><td>${esc(p.Category)}</td><td>${esc(p.BaseUnit)}</td><td>${p.PurchaseUnit ? esc(p.PurchaseUnit) + ' ×' + fmtNum(p.ConversionFactor) : ''}</td></tr>`).join('')}</tbody></table></div>` : ''}`;
+    };
+    if (src.length) { $('#im-sheet').onchange = drawMap; drawMap(); }
+    $('#im-dry').onclick = () => withBtn($('#im-dry'), async () => { const r = await api('importItems', payload(true)); showRes(r); $('#im-go').disabled = !r.valid; });
+    $('#im-go').onclick = async () => { if (!await confirmBox('ยืนยันนำเข้า', 'นำเข้ารายการที่ผ่านการตรวจสอบเข้าชีต Items (ชีตต้นทางไม่ถูกแก้ไข)')) return; withBtn($('#im-go'), async () => { const r = await api('importItems', payload(false), { mutate: true }); showRes(r); S.items = null; $('#im-go').disabled = true; }); };
+    return;
+  }
+  body.innerHTML = `<div class="lists"><div class="panel"><div class="panel-h"><h3>สำรองข้อมูล<span class="desc">คัดลอกไฟล์ Google Sheets ทั้งไฟล์ไว้ในโฟลเดอร์เดียวกัน</span></h3></div><div class="panel-b"><p>แนะนำให้สำรองก่อนนำเข้าข้อมูลหรือปรับปรุงโครงสร้าง และติดตั้งการสำรองอัตโนมัติรายวันด้วยฟังก์ชัน <code>InstallDailyBackupTrigger()</code> จาก Apps Script Editor</p><button class="btn primary" id="sy-bak">${ic('db')}สำรองข้อมูลตอนนี้</button><div id="sy-bak-r" style="margin-top:10px"></div></div></div>
+  <div class="panel"><div class="panel-h"><h3>ตรวจสอบสุขภาพระบบ (Health Check)</h3></div><div class="panel-b"><button class="btn blue" id="sy-hc">${ic('shield')}ตรวจสอบ</button><div id="sy-hc-r" style="margin-top:10px"></div></div></div></div>
+  <div class="panel"><div class="panel-h"><h3>ตรวจสอบความสอดคล้องของยอดคงเหลือ (Reconciliation)<span class="desc">เทียบ StockBalance กับ StockTransactions, ใบรับค้าง Posting, IssuedQty ของใบเบิก</span></h3></div><div class="panel-b"><div style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn blue" id="sy-rc">${ic('search')}ตรวจสอบ</button><button class="btn orange" id="sy-fix">${ic('refresh')}แก้ไข: สร้างยอดสรุปใหม่จากบัญชีธุรกรรม</button></div><div id="sy-rc-r" style="margin-top:10px"></div></div></div>`;
+  const showRc = r => $('#sy-rc-r').innerHTML = r.ok ? `<div class="alert ok">${ic('check')}<div>ข้อมูลสอดคล้อง (ตรวจเมื่อ ${fmtDateTime(r.checkedAt)})</div></div>` : `<div class="alert warn">${ic('alert')}<div>พบ ${r.issues.length} รายการ:<br>${r.issues.slice(0, 100).map(esc).join('<br>')}</div></div>`;
+  $('#sy-bak').onclick = () => withBtn($('#sy-bak'), async () => { const r = await api('createBackup', {}, { mutate: true }); $('#sy-bak-r').innerHTML = `<div class="alert ok">${ic('check')}<div>สร้าง <a href="${esc(r.url)}" target="_blank" rel="noopener">${esc(r.name)}</a> แล้ว</div></div>`; });
+  $('#sy-hc').onclick = () => withBtn($('#sy-hc'), async () => { const h = await api('healthCheck'); $('#sy-hc-r').innerHTML = `<div class="alert ${h.status === 'OK' ? 'ok' : 'warn'}">${ic(h.status === 'OK' ? 'check' : 'alert')}<div>สถานะ <b>${esc(h.status)}</b> · ${esc(h.spreadsheetName || '')} · Schema v${esc(h.schemaVersion || '-')} · Pepper ${h.pepperConfigured ? 'ตั้งค่าแล้ว' : '<b>ยังไม่ตั้งค่า</b>'} · ${fmtDateTime(h.serverTime)}</div></div>${h.sheets ? `<div class="table-wrap"><table class="tbl"><thead><tr><th>ชีต</th><th class="num">แถว</th><th>สถานะ</th></tr></thead><tbody>${h.sheets.map(s => `<tr><td>${esc(s.name)}</td><td class="num">${s.exists ? fmtNum(s.rows) : '-'}</td><td>${!s.exists ? '<span class="badge b-red">ไม่มีชีต</span>' : s.missingColumns.length ? `<span class="badge b-orange">ขาดคอลัมน์: ${esc(s.missingColumns.join(', '))}</span>` : '<span class="badge b-green">ครบ</span>'}</td></tr>`).join('')}</tbody></table></div>` : ''}`; });
+  $('#sy-rc').onclick = () => withBtn($('#sy-rc'), async () => showRc(await api('reconcileStock', {})));
+  $('#sy-fix').onclick = async () => { if (!await confirmBox('แก้ไขความสอดคล้อง', 'ระบบจะ: (1) สร้าง StockBalance ใหม่จาก StockTransactions (2) ปรับ IssuedQty ของใบเบิกตามบัญชีธุรกรรม (3) ปิดสถานะใบรับที่ค้าง Posting — ไม่ลบหรือแก้ไขธุรกรรมเดิม')) return; withBtn($('#sy-fix'), async () => showRc(await api('reconcileStock', { fix: true }, { mutate: true }))); };
+};
+
+init();
+</script>
+</body>
+</html>
